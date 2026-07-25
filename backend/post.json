@@ -1,0 +1,636 @@
+{
+	"info": {
+		"_postman_id": "e4a5b6c7-d8e9-f0a1-b2c3-d4e5f6a7b8c9",
+		"name": "API نهایی آزمایشگاه بتن (جامع)",
+		"description": "نسخه نهایی و کامل شامل اندپوینت‌های ثبت نام، لاگین، دریافت جامع دیتا و تمام اندپوینت‌های CRUD با سیستم احراز هویت توکن و زنجیره هوشمند.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"finaluser\",\n    \"password\": \"someSecurePassword123\",\n    \"first_name\": \"کاربر\",\n    \"last_name\": \"نهایی\",\n    \"email\": \"final@example.com\",\n    \"lab_name\": \"آزمایشگاه جامع تهران\",\n    \"lab_mobile_number\": \"09121112233\",\n    \"lab_address\": \"تهران، میدان آزادی\",\n    \"province\": \"تهران\",\n    \"city\": \"تهران\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/register/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"register",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.token) {",
+									"        pm.collectionVariables.set(\"authToken\", jsonData.token);",
+									"        console.log(\"Auth Token saved: \" + jsonData.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"finaluser\",\n    \"password\": \"someSecurePassword123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/login/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"login",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Main Data Endpoint",
+			"item": [
+				{
+					"name": "Get Full User Data",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.user && jsonData.user.lab_profile) {",
+									"        pm.collectionVariables.set(\"profileId\", jsonData.user.lab_profile.id);",
+									"        console.log(\"Profile ID saved: \" + jsonData.user.lab_profile.id);",
+									"    }",
+									"    if (jsonData.projects && jsonData.projects.length > 0) {",
+									"        pm.collectionVariables.set(\"projectId\", jsonData.projects[0].id);",
+									"        console.log(\"First Project ID saved: \" + jsonData.projects[0].id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/full-data/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"full-data",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. CRUD Operations",
+			"item": [
+				{
+					"name": "Get My Profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/profiles/{{profileId}}/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"profiles",
+								"{{profileId}}",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update My Profile",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"نام جدید کاربر\",\n    \"last_name\": \"فامیلی جدید کاربر\",\n    \"email\": \"new.email.final@example.com\",\n    \"lab_name\": \"آزمایشگاه آپدیت شده\",\n    \"lab_mobile_number\": \"09129998877\",\n    \"lab_address\": \"آدرس جدید آزمایشگاه\",\n    \"province\": \"استان جدید\",\n    \"city\": \"شهر جدید\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/profiles/{{profileId}}/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"profiles",
+								"{{profileId}}",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Manage Projects",
+			"item": [
+				{
+					"name": "List Projects",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/projects/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"projects",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Project",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set(\"projectId\", jsonData.id);",
+									"    console.log(\"Project ID saved: \" + jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"file_number\": \"P-101\",\n    \"project_name\": \"اولین پروژه از CRUD\",\n    \"client_name\": \"کارفرما ۱\",\n    \"client_phone_number\": \"0211111\",\n    \"supervisor_name\": \"ناظر ۱\",\n    \"supervisor_phone_number\": \"0912111\",\n    \"requester_name\": \"درخواست دهنده ۱\",\n    \"requester_phone_number\": \"0910111\",\n    \"municipality_zone\": \"منطقه ۱\",\n    \"address\": \"آدرس پروژه ۱\",\n    \"project_usage_type\": \"تجاری\",\n    \"floor_count\": 8,\n    \"cement_type\": \"تیپ ۵\",\n    \"occupied_area\": 1200,\n    \"mold_type\": \"فلزی\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/projects/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"projects",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Single Project",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/projects/{{projectId}}/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"projects",
+								"{{projectId}}",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Project",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"file_number\": \"P-101-UPDATED\",\n    \"project_name\": \"اولین پروژه (آپدیت شده)\",\n    \"client_name\": \"کارفرما ۱\",\n    \"client_phone_number\": \"0211111\",\n    \"supervisor_name\": \"ناظر ۱\",\n    \"supervisor_phone_number\": \"0912111\",\n    \"requester_name\": \"درخواست دهنده ۱\",\n    \"requester_phone_number\": \"0910111\",\n    \"municipality_zone\": \"منطقه ۱\",\n    \"address\": \"آدرس پروژه ۱\",\n    \"project_usage_type\": \"تجاری\",\n    \"floor_count\": 8,\n    \"cement_type\": \"تیپ ۵\",\n    \"occupied_area\": 1200,\n    \"mold_type\": \"فلزی\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/projects/{{projectId}}/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"projects",
+								"{{projectId}}",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Project",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/projects/{{projectId}}/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"projects",
+								"{{projectId}}",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "5. Manage Samples",
+			"item": [
+				{
+					"name": "List Samples",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/samples/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"samples",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Sample",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set(\"sampleId\", jsonData.id);",
+									"    console.log(\"Sample ID saved: \" + jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"project\": {{projectId}},\n    \"date\": \"2025-09-10T10:00:00Z\",\n    \"test_type\": \"فشاری\",\n    \"sampling_volume\": \"4 m3\",\n    \"cement_grade\": \"C25\",\n    \"category\": \"دیوار برشی\",\n    \"weather_condition\": \"معتدل\",\n    \"concrete_factory\": \"بتن شرق\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/samples/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"samples",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Single Sample",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/samples/{{sampleId}}/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"samples",
+								"{{sampleId}}",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "6. Manage Sampling Series",
+			"item": [
+				{
+					"name": "List Series",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/series/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"series",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Series",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set(\"seriesId\", jsonData.id);",
+									"    console.log(\"Series ID saved: \" + jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sample\": {{sampleId}},\n    \"concrete_temperature\": 29.0,\n    \"ambient_temperature\": 31.0,\n    \"slump\": 7.5,\n    \"range\": \"7-9\",\n    \"air_percentage\": 2.0,\n    \"has_additive\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/series/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"series",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Single Series",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/series/{{seriesId}}/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"series",
+								"{{seriesId}}",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "7. Manage Molds",
+			"item": [
+				{
+					"name": "List Molds",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/molds/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"molds",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Mold",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set(\"moldId\", jsonData.id);",
+									"    console.log(\"Mold ID saved: \" + jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"series\": {{seriesId}},\n    \"age_in_days\": 7,\n    \"mass\": 8.1,\n    \"breaking_load\": 0,\n    \"deadline\": \"2025-09-17T10:00:00Z\",\n    \"sample_identifier\": \"W-7-1\",\n    \"extra_data\": {\"note\": \"first mold\"}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/molds/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"molds",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Single Mold",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/molds/{{moldId}}/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"molds",
+								"{{moldId}}",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "noauth"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// This script automatically adds the authorization header to every request",
+					"// in folders that need authentication.",
+					"const token = pm.collectionVariables.get(\"authToken\");",
+					"if (token) {",
+					"    pm.request.headers.add({",
+					"        key: 'Authorization',",
+					"        value: 'Token ' + token",
+					"    });",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://127.0.0.1:8000"
+		},
+		{
+			"key": "authToken",
+			"value": ""
+		},
+		{
+			"key": "profileId",
+			"value": ""
+		},
+		{
+			"key": "projectId",
+			"value": ""
+		},
+		{
+			"key": "sampleId",
+			"value": ""
+		},
+		{
+			"key": "seriesId",
+			"value": ""
+		},
+		{
+			"key": "moldId",
+			"value": ""
+		}
+	]
+}
