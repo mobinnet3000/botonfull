@@ -1,7 +1,6 @@
-﻿import { Box, Stack, Typography, type ButtonProps } from '@mui/material';
+﻿import { Box, Stack, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import type { ReactNode } from 'react';
-import { useApp } from '../../core/contexts/AppContext';
 
 interface PageHeaderProps {
   title: string;
@@ -10,7 +9,6 @@ interface PageHeaderProps {
 }
 
 export function PageHeader({ title, subtitle, actions }: PageHeaderProps) {
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
@@ -27,14 +25,6 @@ export function PageHeader({ title, subtitle, actions }: PageHeaderProps) {
         {actions && <Stack direction="row" gap={1}>{actions}</Stack>}
       </Stack>
     </motion.div>
-  );
-}
-
-export function AddButton({ children, ...props }: ButtonProps) {
-  return (
-    <Button variant="contained" color="primary" {...props}>
-      {children}
-    </Button>
   );
 }
 
