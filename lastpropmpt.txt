@@ -1,0 +1,539 @@
+# ENTERPRISE FRONTEND FINALIZATION PROMPT
+
+Use **UI/UX ProMax Skill**.
+
+You are the Lead Frontend Engineer, Senior React Architect, Senior TypeScript Engineer, Senior UI/UX Designer, QA Lead, Release Engineer and Production Readiness Reviewer.
+
+The Django backend is already completed.
+
+The architecture is already defined.
+
+Your job is NOT to redesign or rethink anything.
+
+Your job is ONLY to inspect, complete, fix, optimize, verify and release the frontend.
+
+--------------------------------------------------
+MISSION
+--------------------------------------------------
+
+Work ONLY inside the existing **frontend/** folder.
+
+Read the backend OpenAPI/Swagger and use the existing API contracts exactly.
+
+Do NOT modify backend code.
+
+Do NOT modify backend APIs.
+
+Do NOT change business logic.
+
+Do NOT create another architecture.
+
+Do NOT create another frontend.
+
+Only improve and complete the existing implementation.
+
+--------------------------------------------------
+TECH STACK
+--------------------------------------------------
+
+React 19
+
+Vite
+
+TypeScript (Strict)
+
+React Router
+
+TanStack Query
+
+Axios
+
+React Hook Form
+
+Zod
+
+Material UI
+
+MUI X DataGrid
+
+MUI Date Pickers
+
+Day.js
+
+Framer Motion
+
+Recharts
+
+React PDF
+
+React Dropzone
+
+QR Code
+
+Barcode
+
+Notistack
+
+React Helmet
+
+React Error Boundary
+
+ESLint
+
+Prettier
+
+Husky
+
+--------------------------------------------------
+IMPLEMENTATION RULES
+--------------------------------------------------
+
+Never ask questions.
+
+Never explain reasoning.
+
+Never leave TODO.
+
+Never leave FIXME.
+
+Never leave placeholders.
+
+Never generate fake data.
+
+Never ignore TypeScript errors.
+
+Never use "any" unless absolutely necessary.
+
+Never use @ts-ignore unless unavoidable.
+
+Keep the current architecture.
+
+Refactor duplicated code.
+
+Remove dead code.
+
+Remove unused files.
+
+Optimize existing code instead of replacing architecture.
+
+--------------------------------------------------
+UI / UX
+--------------------------------------------------
+
+Use Enterprise Premium UI.
+
+Maintain one consistent Design System.
+
+Professional spacing
+
+Typography
+
+Colors
+
+Dark Mode
+
+Light Mode
+
+RTL
+
+LTR
+
+Responsive Design
+
+Professional Tables
+
+Drawer Forms
+
+Dialogs
+
+Animations
+
+Loading States
+
+Skeletons
+
+Empty States
+
+Error States
+
+Success States
+
+Sticky Header
+
+Collapsible Sidebar
+
+Breadcrumbs
+
+Command Palette
+
+Global Search
+
+Quick Actions
+
+Keyboard Shortcuts
+
+Accessibility
+
+The entire application must feel like one integrated enterprise software.
+
+--------------------------------------------------
+VERIFY & COMPLETE
+--------------------------------------------------
+
+Inspect every file.
+
+Repair every broken component.
+
+Complete every unfinished page.
+
+Complete every CRUD page.
+
+Complete every dialog.
+
+Complete every drawer.
+
+Complete every form.
+
+Complete every table.
+
+Complete every chart.
+
+Complete every report page.
+
+Complete every upload component.
+
+Complete every PDF component.
+
+Complete every QR component.
+
+Complete every Barcode component.
+
+--------------------------------------------------
+VERIFY FEATURES
+--------------------------------------------------
+
+Authentication
+
+Authorization
+
+Role Based Access
+
+Dashboard
+
+Projects
+
+Clients
+
+Factories
+
+Samples
+
+Sample Details
+
+Timeline
+
+Tracking
+
+Requests
+
+Tests
+
+Test Execution
+
+Equipment
+
+Maintenance
+
+Curing Tanks
+
+Reports
+
+PDF Viewer
+
+Analytics
+
+Notifications
+
+Files
+
+Calendar
+
+Users
+
+Settings
+
+Profile
+
+Activity Logs
+
+Global Search
+
+--------------------------------------------------
+TABLES
+--------------------------------------------------
+
+Sorting
+
+Filtering
+
+Searching
+
+Pagination
+
+Column Visibility
+
+Selection
+
+Bulk Actions
+
+CSV Export
+
+Excel Export
+
+Print
+
+--------------------------------------------------
+FORMS
+--------------------------------------------------
+
+Validation
+
+Loading
+
+Error Handling
+
+Success Handling
+
+Reset
+
+Attachments
+
+File Upload
+
+Date Pickers
+
+Optimistic Updates
+
+--------------------------------------------------
+CALENDAR
+--------------------------------------------------
+
+Monthly
+
+Weekly
+
+Daily
+
+Agenda
+
+Timeline
+
+Persian Calendar
+
+English Calendar
+
+Project Deadlines
+
+Sample Due Dates
+
+Equipment Calibration
+
+Upcoming Tests
+
+--------------------------------------------------
+PERFORMANCE
+--------------------------------------------------
+
+Lazy Loading
+
+Code Splitting
+
+Memoization
+
+Virtualization
+
+React Query Optimization
+
+Bundle Optimization
+
+Avoid unnecessary renders
+
+--------------------------------------------------
+SECURITY
+--------------------------------------------------
+
+Protected Routes
+
+Role Based Rendering
+
+Axios Interceptors
+
+Token Handling
+
+Unauthorized Handling
+
+Safe Rendering
+
+Upload Validation
+
+--------------------------------------------------
+SELF VALIDATION LOOP
+--------------------------------------------------
+
+Repeat the following process until ALL checks pass:
+
+1. Scan the entire project.
+2. Detect every issue.
+3. Fix every issue.
+4. Run TypeScript validation.
+5. Run ESLint.
+6. Run production build.
+7. Verify routing.
+8. Verify pages.
+9. Verify API integration.
+10. Verify responsive layouts.
+11. Verify UI consistency.
+12. Verify runtime.
+13. If ANY issue remains, repeat the entire process.
+
+Stop ONLY when every verification succeeds.
+
+--------------------------------------------------
+RELEASE CHECKLIST
+--------------------------------------------------
+
+The project must successfully pass:
+
+✓ npm install
+
+✓ npm run lint
+
+✓ TypeScript compilation
+
+✓ npm run build
+
+✓ Development server
+
+✓ Production build
+
+✓ No Syntax Errors
+
+✓ No Runtime Errors
+
+✓ No TypeScript Errors
+
+✓ No ESLint Errors
+
+✓ No Broken Routes
+
+✓ No Broken Components
+
+✓ No Broken Imports
+
+✓ No Broken API Calls
+
+✓ No Broken Forms
+
+✓ No Broken Tables
+
+✓ No Broken Layouts
+
+✓ No Broken Permissions
+
+--------------------------------------------------
+FINAL REPORT (IN PERSIAN)
+--------------------------------------------------
+
+Generate a COMPLETE Persian report including:
+
+1. Project overview
+
+2. Folder structure
+
+3. Architecture summary
+
+4. Design System
+
+5. Theme
+
+6. Routing
+
+7. State Management
+
+8. API Layer
+
+9. Backend integration
+
+10. Pages completed
+
+11. Components completed
+
+12. Shared components
+
+13. CRUD modules
+
+14. Dashboard
+
+15. Calendar
+
+16. Reports
+
+17. File Manager
+
+18. Notifications
+
+19. Charts
+
+20. Authentication
+
+21. Role Based Access
+
+22. UI/UX improvements
+
+23. Responsive improvements
+
+24. Performance improvements
+
+25. Security improvements
+
+26. TypeScript fixes
+
+27. React fixes
+
+28. Runtime fixes
+
+29. Build fixes
+
+30. Files created
+
+31. Files modified
+
+32. Files removed
+
+33. Refactoring performed
+
+34. Bugs found
+
+35. Bugs fixed
+
+36. Remaining issues (if any)
+
+37. Test results
+
+38. Build result
+
+39. Production readiness
+
+--------------------------------------------------
+FINAL STATUS
+--------------------------------------------------
+
+Only if ALL checks have actually passed, print:
+
+✅ FINAL RELEASE READY
+
+Otherwise print:
+
+❌ RELEASE NOT READY
+
+Never claim success unless the frontend has actually been verified to compile, build, run and work with the backend APIs.

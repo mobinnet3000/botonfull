@@ -1,4 +1,4 @@
-import { Alert, Box, Button, Stack, Typography } from '@mui/material';
+﻿import { Alert, Box, Button, Typography } from '@mui/material';
 import { useApp } from '../../core/contexts/AppContext';
 
 export function EmptyState({ title, description }: { title?: string; description?: string }) {

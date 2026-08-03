@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+﻿import { useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Box,
@@ -27,7 +27,6 @@ import { FileUpload } from '../../shared/components/FileUpload';
 import { useMutation } from '@tanstack/react-query';
 import { useSnackbar } from 'notistack';
 import { getErrorMessage } from '../../core/api/client';
-import { downloadFile } from '../../core/api/client';
 
 const STATUS_OPTIONS = ['created', 'received', 'waiting', 'stored', 'curing', 'ready_for_test', 'testing', 'completed', 'reported', 'archived', 'cancelled'];
 
@@ -70,7 +69,7 @@ export default function SampleDetailPage() {
   });
 
   const statusMutation = useMutation({
-    mutationFn: (status: string) => sampleApi.patch(Number(id), { status } as Partial<Sample>),
+    mutationFn: (status: string) => sampleApi.patch(Number(id), { status } as Partial<SampleType>),
     onSuccess: () => {
       enqueueSnackbar(t('messages.updated'), { variant: 'success' });
       qc.invalidateQueries({ queryKey: ['samples', id] });

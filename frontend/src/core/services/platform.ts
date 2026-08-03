@@ -1,6 +1,6 @@
-import { apiRequest } from '../api/client';
-import { listResource, getResource } from './core';
-import type { AppNotification, AppFile, ActivityLog, AdminUser, DashboardStats, QcAnalysis } from '../types';
+﻿import { apiRequest } from '../api/client';
+import { listResource } from './core';
+import type { AppNotification, AppFile, ActivityLog, DashboardStats, QcAnalysis } from '../types';
 
 export const notificationApi = {
   list: listResource<AppNotification>('/notifications/'),
@@ -59,3 +59,4 @@ export const ticketApi = {
   message: (payload: { ticket: number; message: string }) =>
     apiRequest<unknown>({ method: 'POST', url: 'ticket-messages/', data: payload }),
 };
+

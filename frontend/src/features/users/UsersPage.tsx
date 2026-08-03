@@ -30,7 +30,6 @@ const ROLE_OPTIONS = Object.entries(ROLE_LABELS).map(([value, label]) => ({ valu
 
 export default function UsersPage() {
   const { t } = useApp();
-  const { enqueueSnackbar } = useSnackbar();
   const qc = useQueryClient();
 
   const columns: GridColDef<AdminUser>[] = [
@@ -58,7 +57,6 @@ export default function UsersPage() {
           record={record}
           onClose={onClose}
           onSuccess={() => qc.invalidateQueries({ queryKey: ['users'] })}
-          notify={(msg) => enqueueSnackbar(msg, { variant: 'success' })}
         />
       )}
     />
@@ -69,12 +67,10 @@ function UserForm({
   record,
   onClose,
   onSuccess,
-  notify,
 }: {
   record: AdminUser | null;
   onClose: () => void;
   onSuccess: () => void;
-  notify: (msg: string) => void;
 }) {
   const { t } = useApp();
   const { enqueueSnackbar } = useSnackbar();
@@ -85,8 +81,9 @@ function UserForm({
   const mutation = useMutation({
     mutationFn: (d: FormValues) => {
       if (record) {
-        const { password, ...rest } = d;
-        return userApi.update(record.id, { ...rest } as Record<string, unknown>);
+        const payload = { ...d } as Record<string, unknown>;
+        delete payload.password;
+        return userApi.update(record.id, payload);
       }
       return userApi.create({ ...d } as Partial<AdminUser> & { password?: string });
     },

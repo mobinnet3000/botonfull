@@ -1,7 +1,7 @@
-import { useForm, FormProvider } from 'react-hook-form';
+﻿import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Stack, Chip, Tooltip } from '@mui/material';
+import { Stack, Chip } from '@mui/material';
 import type { GridColDef } from '@mui/x-data-grid';
 import { CrudFeature } from '../../shared/components/CrudFeature';
 import { equipmentApi } from '../../core/services/domain';

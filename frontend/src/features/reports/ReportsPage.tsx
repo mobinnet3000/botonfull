@@ -1,4 +1,4 @@
-import { useForm, FormProvider } from 'react-hook-form';
+﻿import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Stack } from '@mui/material';
@@ -68,7 +68,7 @@ function ReportForm({ record, onClose }: { record: Report | null; onClose: () =>
   });
   const mutation = useMutation({
     mutationFn: (d: FormValues) => reportApi.create(d as Partial<Report>),
-    onSuccess: (data) => {
+    onSuccess: () => {
       enqueueSnackbar(t('messages.created'), { variant: 'success' });
       qc.invalidateQueries({ queryKey: ['reports'] });
       onClose();

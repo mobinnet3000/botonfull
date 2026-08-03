@@ -1,6 +1,5 @@
 import { Component, type ReactNode } from 'react';
 import { Box, Button, Typography } from '@mui/material';
-import { useApp } from '../../core/contexts/AppContext';
 
 export class AppErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
   constructor(props: { children: ReactNode }) {

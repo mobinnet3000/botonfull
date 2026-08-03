@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+﻿import { useParams } from 'react-router-dom';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import {
   Box,
@@ -6,7 +6,7 @@ import {
   Card,
   CardContent,
   Chip,
-  Divider,
+
   Grid,
   IconButton,
   List,
@@ -20,7 +20,7 @@ import {
 import { ArrowBack, Download, Print } from '@mui/icons-material';
 import { useState } from 'react';
 import { reportApi } from '../../core/services/reports';
-import { formatDate, formatNumber } from '../../core/utils/format';
+import { formatDate } from '../../core/utils/format';
 import { useApp } from '../../core/contexts/AppContext';
 import { usePageTitle } from '../../core/hooks/usePageTitle';
 import { StatusChip } from '../../shared/components/StatusChip';
@@ -210,3 +210,4 @@ export default function ReportDetailPage() {
     </Box>
   );
 }
+

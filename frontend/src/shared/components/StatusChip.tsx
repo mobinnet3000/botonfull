@@ -37,7 +37,10 @@ const STATUS_LABELS: Record<string, string> = {
 
 export function StatusChip({ value, label }: { value?: string | null; label?: string }) {
   const { mode } = useApp();
-  const color = useMemo(() => statusColors[value ?? ''] ?? palette[mode].secondary, [value, mode]);
+  const color = useMemo(
+    () => statusColors[(value ?? '') as keyof typeof statusColors] ?? palette[mode].secondary,
+    [value, mode],
+  );
   const text = label ?? STATUS_LABELS[value ?? ''] ?? value ?? '—';
   return (
     <Chip

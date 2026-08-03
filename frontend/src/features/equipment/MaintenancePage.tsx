@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { Stack } from '@mui/material';
 import type { GridColDef } from '@mui/x-data-grid';
 import { CrudFeature } from '../../shared/components/CrudFeature';
-import { maintenanceApi, equipmentApi } from '../../core/services/domain';
+import { maintenanceApi } from '../../core/services/domain';
 import type { MaintenanceRecord } from '../../core/types';
 import { useApp } from '../../core/contexts/AppContext';
 import { useAuth } from '../../core/auth/AuthContext';
@@ -14,7 +14,7 @@ import { TextInput, SelectInput, NumberInput, DateField } from '../../shared/com
 import { FormActions } from '../../shared/components/form/FormActions';
 import { useSnackbar } from 'notistack';
 import { getErrorMessage } from '../../core/api/client';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 const schema = z.object({
   equipment: z.any(),
@@ -58,7 +58,6 @@ function MaintenanceForm({ record, onClose }: { record: MaintenanceRecord | null
   const { t } = useApp();
   const { enqueueSnackbar } = useSnackbar();
   const qc = useQueryClient();
-  const { data: equipment } = useQuery({ queryKey: ['equipment-options'], queryFn: () => equipmentApi.list({ page_size: 100 }) });
   const methods = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: (record ?? {}) as FormValues,

@@ -68,13 +68,6 @@ export function buildTheme(mode: ColorMode, direction: Direction, lang: string):
       MuiChip: {
         styleOverrides: { root: { fontWeight: 600 } },
       },
-      MuiDataGrid: {
-        styleOverrides: {
-          root: { border: 'none', '--DataGrid-rowBorderColor': tokens.border },
-          columnHeaders: { backgroundColor: tokens.surfaceAlt },
-          cell: { borderBottom: `1px solid ${tokens.border}` },
-        },
-      },
     },
   });
 }

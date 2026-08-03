@@ -1,9 +1,8 @@
-import { AppBar, Toolbar, IconButton, Box, Menu, MenuItem, Avatar, Badge, Tooltip, Typography, Divider, Stack, useMediaQuery, useTheme } from '@mui/material';
+import { AppBar, Toolbar, IconButton, Box, Menu, MenuItem, Avatar, Badge, Tooltip, Typography, Divider } from '@mui/material';
 import {
   Menu as MenuIcon,
   DarkMode,
   LightMode,
-  Notifications as NotifIcon,
   Logout,
   Person,
   Translate,
@@ -22,8 +21,6 @@ export function Header() {
   const { t, mode, toggleMode, lang, setLang, toggleSidebar, setCommandOpen } = useApp();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [userMenu, setUserMenu] = useState<null | HTMLElement>(null);
 
   const { data: notifData } = useQuery({

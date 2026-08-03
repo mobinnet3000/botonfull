@@ -1,4 +1,4 @@
-import { Box, Stack, Typography, Button, type ButtonProps } from '@mui/material';
+﻿import { Box, Stack, Typography, type ButtonProps } from '@mui/material';
 import { motion } from 'framer-motion';
 import type { ReactNode } from 'react';
 import { useApp } from '../../core/contexts/AppContext';
@@ -10,7 +10,7 @@ interface PageHeaderProps {
 }
 
 export function PageHeader({ title, subtitle, actions }: PageHeaderProps) {
-  const { t } = useApp();
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
@@ -37,3 +37,5 @@ export function AddButton({ children, ...props }: ButtonProps) {
     </Button>
   );
 }
+
+

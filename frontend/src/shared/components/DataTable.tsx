@@ -1,17 +1,5 @@
-import { useMemo, useState } from 'react';
-import {
-  Box,
-  Button,
-  IconButton,
-  Menu,
-  MenuItem,
-  Paper,
-  Stack,
-  TextField,
-  Toolbar,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+﻿import { useMemo, useState } from 'react';
+import {\n  Box,\n  Button,\n  IconButton,\n  Menu,\n  MenuItem,\n  Paper,\n  TextField,\n  Toolbar,\n  Tooltip,\n  Typography,\n} from '@mui/material';
 import {
   DataGrid,
   type GridColDef,
@@ -32,7 +20,7 @@ import {
 import { rowsToCsv, downloadBlob } from '../../core/utils/format';
 import { useApp } from '../../core/contexts/AppContext';
 
-export interface DataTableProps<T> {
+export interface DataTableProps<T extends { id: number }> {
   columns: GridColDef<T>[];
   rows: T[];
   rowCount?: number;
@@ -57,7 +45,7 @@ export interface DataTableProps<T> {
   minHeight?: number;
 }
 
-export function DataTable<T extends { id: number; }>(
+export function DataTable<T extends { id: number }>({
   columns,
   rows,
   rowCount,

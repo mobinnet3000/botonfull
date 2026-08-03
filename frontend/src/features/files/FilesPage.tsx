@@ -1,5 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Box, Button, Card, CardContent, Chip, Dialog, DialogContent, IconButton, ImageList, ImageListItem, ImageListItemBar, Stack, Typography } from '@mui/material';
+﻿import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Box, Card, CardContent, Chip, Dialog, DialogContent, IconButton, ImageList, ImageListItem, ImageListItemBar, Stack, Typography } from '@mui/material';
 import { Delete, Download, Preview } from '@mui/icons-material';
 import { fileApi } from '../../core/services/platform';
 import { useApp } from '../../core/contexts/AppContext';
@@ -53,8 +53,8 @@ export default function FilesPage() {
   usePageTitle(t('nav.files'));
   const [preview, setPreview] = useState<AppFile | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AppFile | null>(null);
-  const [contentType, setContentType] = useState<'project' | 'sample' | 'report' | 'testexecution' | 'labrequest' | 'equipment'>('sample');
-  const [objectId, setObjectId] = useState(1);
+  const contentType = 'sample' as const;
+  const objectId = 1;
 
   const { data } = useQuery({ queryKey: ['files'], queryFn: () => fileApi.list({ page_size: 100 }) });
 
@@ -141,3 +141,4 @@ export default function FilesPage() {
     </Box>
   );
 }
+

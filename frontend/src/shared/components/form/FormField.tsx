@@ -1,4 +1,4 @@
-import {
+﻿import {
   Autocomplete,
   Checkbox,
   FormControl,
@@ -34,7 +34,7 @@ export function TextInput<T extends FieldValues>({
   required?: boolean;
   rows?: number;
 }) {
-  const control = useFormContext<T>();
+  const { control } = useFormContext<T>();
   return (
     <Controller
       name={name}
@@ -66,7 +66,7 @@ export function NumberInput<T extends FieldValues>({
   label: string;
   required?: boolean;
 }) {
-  const control = useFormContext<T>();
+  const { control } = useFormContext<T>();
   return (
     <Controller
       name={name}
@@ -99,7 +99,7 @@ export function SelectInput<T extends FieldValues>({
   options: Option[];
   required?: boolean;
 }) {
-  const control = useFormContext<T>();
+  const { control } = useFormContext<T>();
   return (
     <Controller
       name={name}
@@ -130,7 +130,7 @@ export function MultiSelectInput<T extends FieldValues>({
   label: string;
   options: Option[];
 }) {
-  const control = useFormContext<T>();
+  const { control } = useFormContext<T>();
   return (
     <Controller
       name={name}
@@ -153,7 +153,7 @@ export function MultiSelectInput<T extends FieldValues>({
 }
 
 export function DateField<T extends FieldValues>({ name, label }: { name: Path<T>; label: string }) {
-  const control = useFormContext<T>();
+  const { control } = useFormContext<T>();
   return (
     <Controller
       name={name}
@@ -171,7 +171,7 @@ export function DateField<T extends FieldValues>({ name, label }: { name: Path<T
 }
 
 export function DateTimeField<T extends FieldValues>({ name, label }: { name: Path<T>; label: string }) {
-  const control = useFormContext<T>();
+  const { control } = useFormContext<T>();
   return (
     <Controller
       name={name}
@@ -197,7 +197,7 @@ export function AutocompleteField<T extends FieldValues>({
   label: string;
   options: Option[];
 }) {
-  const control = useFormContext<T>();
+  const { control } = useFormContext<T>();
   return (
     <Controller
       name={name}
@@ -225,7 +225,7 @@ export function AutocompleteField<T extends FieldValues>({
 }
 
 export function BoolField<T extends FieldValues>({ name, label }: { name: Path<T>; label: string }) {
-  const control = useFormContext<T>();
+  const { control } = useFormContext<T>();
   return (
     <Controller
       name={name}
