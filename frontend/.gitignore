@@ -1,19 +1,12 @@
-# Ignore build outputs
-build/
-.flutter-plugins
-.flutter-plugins-dependencies
-.packages
-.dart_tool/
-.idea/
-android/
-ios/
-web/
-macos/
-linux/
-windows/
-
-# Keep these:
-!lib/
-pubspec.yaml
-pubspec.lock
-README.md
+node_modules/
+dist/
+dist-ssr/
+*.local
+.env
+.env.*
+!.env.example
+.DS_Store
+logs/
+*.log
+coverage/
+.vite/
