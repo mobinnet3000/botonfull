@@ -6,6 +6,7 @@ from api.serializers import TestExecutionSerializer
 from api.access import scope_by_project
 from api.roles import ADMIN, LAB_MANAGER, TECHNICIAN, QUALITY_MANAGER
 from api.views.base import ScopedModelViewSet
+from api.filters import TestExecutionFilter
 from api.services.report_service import ReportService
 from api.permissions import ReportApprovalPermission
 from api.audit import log_activity
@@ -14,6 +15,7 @@ from api.audit import log_activity
 class TestExecutionViewSet(ScopedModelViewSet):
     write_roles = (ADMIN, LAB_MANAGER, TECHNICIAN, QUALITY_MANAGER)
     serializer_class = TestExecutionSerializer
+    filterset_class = TestExecutionFilter
     filterset_fields = ['test_type', 'status', 'result_status', 'machine']
     search_fields = ['sample__code', 'test_type__name']
 

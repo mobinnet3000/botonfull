@@ -11,14 +11,22 @@ interface KpiCardProps {
   color?: string;
   hint?: string;
   sx?: SxProps<Theme>;
+  onClick?: () => void;
 }
 
-export function KpiCard({ title, value, icon, color, hint, sx }: KpiCardProps) {
+export function KpiCard({ title, value, icon, color, hint, sx, onClick }: KpiCardProps) {
   const { mode } = useApp();
   const accent = color ?? palette[mode].primary;
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-      <Card sx={{ height: '100%', ...sx }}>
+      <Card
+        sx={{
+          height: '100%',
+          ...(onClick ? { cursor: 'pointer', '&:hover': { borderColor: accent } } : {}),
+          ...sx,
+        }}
+        onClick={onClick}
+      >
         <CardContent>
           <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
             <Typography variant="body2" color="text.secondary">

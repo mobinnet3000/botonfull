@@ -23,10 +23,11 @@ const router = createBrowserRouter([
         children: [
           { path: '/', element: page(() => import('../../features/dashboard/DashboardPage')) },
           { path: '/projects', element: page(() => import('../../features/projects/ProjectsPage')) },
-          { path: '/projects/:id', element: page(() => import('../../features/projects/ProjectDetailPage')) },
+          { path: '/projects/:id', element: page(() => import('../../features/projects/ProjectHierarchyPage')) },
           { path: '/clients', element: page(() => import('../../features/clients/ClientsPage')) },
           { path: '/factories', element: page(() => import('../../features/factories/FactoriesPage')) },
           { path: '/samples', element: page(() => import('../../features/samples/SamplesPage')) },
+          { path: '/molds', element: page(() => import('../../features/samples/MoldsPage')) },
           { path: '/samples/:id', element: page(() => import('../../features/samples/SampleDetailPage')) },
           { path: '/sample-types', element: page(() => import('../../features/sample-types/SampleTypesPage')) },
           { path: '/requests', element: page(() => import('../../features/requests/RequestsPage')) },

@@ -183,6 +183,7 @@ export interface Sample {
   received_by: number | null;
   age_in_days?: number | null;
   series?: SamplingSeries[];
+  test_executions?: TestExecution[];
 }
 
 export interface SamplingSeries {

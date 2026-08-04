@@ -14,6 +14,7 @@ from api.serializers import ReportSerializer, ReportRevisionSerializer
 from api.access import scope_by_project
 from api.roles import ADMIN, LAB_MANAGER, ENGINEER, QUALITY_MANAGER
 from api.views.base import ScopedModelViewSet
+from api.filters import ReportFilter
 from api.services.report_service import ReportService
 from api.permissions import ReportApprovalPermission
 from api.audit import log_activity
@@ -22,7 +23,7 @@ from api.audit import log_activity
 class ReportViewSet(ScopedModelViewSet):
     write_roles = (ADMIN, LAB_MANAGER, ENGINEER, QUALITY_MANAGER)
     serializer_class = ReportSerializer
-    filterset_fields = ['status', 'project', 'sample']
+    filterset_class = ReportFilter
     search_fields = ['report_number', 'title', 'project__project_name']
     ordering_fields = ['created_at', 'version']
 

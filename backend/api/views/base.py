@@ -19,8 +19,3 @@ class ScopedModelViewSet(viewsets.ModelViewSet):
         if self.permission_classes:
             return [permission() for permission in self.permission_classes]
         return [permissions.IsAuthenticated(), RoleWritePermission(self.write_roles)]
-
-
-class ScopedReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
-    def get_permissions(self):
-        return [permissions.IsAuthenticated()]

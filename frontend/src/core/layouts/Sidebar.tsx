@@ -34,6 +34,7 @@ import {
   History as ActivityIcon,
   Insights as AnalyticsIcon,
   CalendarMonth as CalendarIcon,
+  GridOn as MoldIcon,
   ExpandLess,
   ExpandMore,
   Search,
@@ -55,6 +56,7 @@ const NAV: NavItem[] = [
   { key: 'dashboard', label: 'nav.dashboard', icon: <DashboardIcon />, path: '/' },
   { key: 'projects', label: 'nav.projects', icon: <ProjectIcon />, path: '/projects' },
   { key: 'samples', label: 'nav.samples', icon: <SampleIcon />, path: '/samples' },
+  { key: 'molds', label: 'قالب‌ها', icon: <MoldIcon />, path: '/molds' },
   { key: 'requests', label: 'nav.requests', icon: <RequestIcon />, path: '/requests' },
   { key: 'tests', label: 'nav.tests', icon: <TestIcon />, path: '/tests' },
   {

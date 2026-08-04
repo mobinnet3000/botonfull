@@ -7,10 +7,12 @@ from api.access import scope_by_project
 from api.roles import ADMIN, LAB_MANAGER, TECHNICIAN, RECEPTION
 from api.views.base import ScopedModelViewSet
 from api.audit import log_activity
+from api.filters import SampleFilter
 
 
 class SampleViewSet(ScopedModelViewSet):
     write_roles = (ADMIN, LAB_MANAGER, TECHNICIAN, RECEPTION)
+    filterset_class = SampleFilter
     search_fields = ['code', 'barcode', 'category', 'concrete_factory', 'cement_grade']
     ordering_fields = ['date', 'status', 'age_in_days']
 

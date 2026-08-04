@@ -24,6 +24,8 @@ import {
   YAxis,
 } from 'recharts';
 import dayjs from 'dayjs';
+import { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { dashboardApi } from '../../core/services/platform';
 import { KpiCard } from '../../shared/components/KpiCard';
 import { useApp } from '../../core/contexts/AppContext';
@@ -32,8 +34,11 @@ import { List, ListItem, ListItemButton, ListItemText } from '@mui/material';
 import { projectApi } from '../../core/services/projects';
 import { sampleApi } from '../../core/services/samples';
 import { reportApi } from '../../core/services/reports';
+import { moldApi } from '../../core/services/domain';
 import { StatusChip } from '../../shared/components/StatusChip';
 import { formatDate } from '../../core/utils/format';
+import { moldDue } from '../../core/utils/molds';
+import { EventBusy, Today, EventAvailable, Schedule } from '@mui/icons-material';
 
 export default function DashboardPage() {
   const { t } = useApp();
@@ -43,21 +48,26 @@ export default function DashboardPage() {
   const { data: samples } = useQuery({ queryKey: ['dashboard-samples'], queryFn: () => sampleApi.list({ page_size: 6, ordering: '-date' }) });
   const { data: reports } = useQuery({ queryKey: ['dashboard-reports'], queryFn: () => reportApi.list({ page_size: 5 }) });
 
-  const trend = Array.from({ length: 7 }).map((_, i) => {
-    const d = dayjs().subtract(6 - i, 'day');
-    return {
-      day: d.format('ddd'),
-      samples: 5 + Math.round(Math.sin(i) * 4 + i),
-      tests: 3 + Math.round(Math.cos(i) * 3 + i),
-    };
-  });
-  const distribution = [
-    { name: 'مکعبی', value: 35 },
-    { name: 'استوانه‌ای', value: 25 },
-    { name: 'سیمان', value: 15 },
-    { name: 'مصالح', value: 12 },
-    { name: 'سایر', value: 13 },
-  ];
+  const trend = useMemo(() => {
+    const byDay = new Map<string, number>();
+    for (const s of samples?.results ?? []) {
+      const key = dayjs(s.date).format('YYYY-MM-DD');
+      byDay.set(key, (byDay.get(key) ?? 0) + 1);
+    }
+    return Array.from({ length: 7 }).map((_, i) => {
+      const d = dayjs().subtract(6 - i, 'day').format('YYYY-MM-DD');
+      return { day: dayjs(d).format('ddd'), samples: byDay.get(d) ?? 0 };
+    });
+  }, [samples]);
+
+  const distribution = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const s of samples?.results ?? []) {
+      const key = s.specimen_type === 'cube' ? 'مکعبی' : 'استوانه‌ای';
+      map.set(key, (map.get(key) ?? 0) + 1);
+    }
+    return Array.from(map.entries()).map(([name, value]) => ({ name, value }));
+  }, [samples]);
 
   return (
     <Stack gap={2} className="fadeIn">
@@ -132,6 +142,8 @@ export default function DashboardPage() {
         </Grid>
       </Grid>
 
+      <DueDateSection />
+
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, md: 8 }}>
           <Paper variant="outlined" sx={{ p: 2, height: 360 }}>
@@ -145,10 +157,6 @@ export default function DashboardPage() {
                     <stop offset="5%" stopColor="#1E40AF" stopOpacity={0.6} />
                     <stop offset="95%" stopColor="#1E40AF" stopOpacity={0} />
                   </linearGradient>
-                  <linearGradient id="t" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#D97706" stopOpacity={0.6} />
-                    <stop offset="95%" stopColor="#D97706" stopOpacity={0} />
-                  </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="day" />
@@ -156,7 +164,6 @@ export default function DashboardPage() {
                 <Tooltip />
                 <Legend />
                 <Area type="monotone" dataKey="samples" name="نمونه" stroke="#1E40AF" fill="url(#s)" />
-                <Area type="monotone" dataKey="tests" name="آزمون" stroke="#D97706" fill="url(#t)" />
               </AreaChart>
             </ResponsiveContainer>
           </Paper>
@@ -245,12 +252,61 @@ export default function DashboardPage() {
                 <Tooltip />
                 <Legend />
                 <Line type="monotone" dataKey="samples" name="نمونه" stroke="#1E40AF" strokeWidth={2} />
-                <Line type="monotone" dataKey="tests" name="آزمون" stroke="#16A34A" strokeWidth={2} />
               </LineChart>
             </ResponsiveContainer>
           </Paper>
         </Grid>
       </Grid>
     </Stack>
+  );
+}
+
+function DueDateSection() {
+  const navigate = useNavigate();
+  const { data: moldsData } = useQuery({
+    queryKey: ['dashboard-molds'],
+    queryFn: () => moldApi.list({ page_size: 500 }),
+    staleTime: 30_000,
+  });
+
+  const molds = useMemo(() => moldsData?.results ?? [], [moldsData]);
+
+  const counts = useMemo(() => {
+    const c = { overdue: 0, today: 0, tomorrow: 0, seven: 0, fourteen: 0, twentyEight: 0 };
+    for (const m of molds) {
+      const info = moldDue(m);
+      if (info.isOverdue) c.overdue += 1;
+      else if (info.isDueToday) c.today += 1;
+      else if (info.isDueTomorrow) c.tomorrow += 1;
+      if (m.age_in_days === 7 && !info.isOverdue && info.remainingDays <= 7) c.seven += 1;
+      if (m.age_in_days === 14 && !info.isOverdue && info.remainingDays <= 14) c.fourteen += 1;
+      if (m.age_in_days === 28 && !info.isOverdue && info.remainingDays <= 28) c.twentyEight += 1;
+    }
+    return c;
+  }, [molds]);
+
+  const goMolds = () => navigate('/molds');
+
+  return (
+    <Grid container spacing={2}>
+      <Grid size={{ xs: 6, sm: 4, md: 2 }}>
+        <KpiCard title="قالب‌های دیرکرد" value={counts.overdue} icon={<EventBusy />} color="#DC2626" onClick={goMolds} />
+      </Grid>
+      <Grid size={{ xs: 6, sm: 4, md: 2 }}>
+        <KpiCard title="آزمون امروز" value={counts.today} icon={<Today />} color="#D97706" onClick={goMolds} />
+      </Grid>
+      <Grid size={{ xs: 6, sm: 4, md: 2 }}>
+        <KpiCard title="آزمون فردا" value={counts.tomorrow} icon={<EventAvailable />} color="#0284C7" onClick={goMolds} />
+      </Grid>
+      <Grid size={{ xs: 6, sm: 4, md: 2 }}>
+        <KpiCard title="نزدیک ۷ روزه" value={counts.seven} icon={<Schedule />} color="#16A34A" onClick={goMolds} />
+      </Grid>
+      <Grid size={{ xs: 6, sm: 4, md: 2 }}>
+        <KpiCard title="نزدیک ۱۴ روزه" value={counts.fourteen} icon={<Schedule />} color="#7C3AED" onClick={goMolds} />
+      </Grid>
+      <Grid size={{ xs: 6, sm: 4, md: 2 }}>
+        <KpiCard title="نزدیک ۲۸ روزه" value={counts.twentyEight} icon={<Schedule />} color="#1E40AF" onClick={goMolds} />
+      </Grid>
+    </Grid>
   );
 }

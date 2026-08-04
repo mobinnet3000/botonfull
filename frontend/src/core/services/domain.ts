@@ -1,4 +1,5 @@
 import { listResource, getResource, createResource, updateResource, patchResource, removeResource } from './core';
+import { apiRequest } from '../api/client';
 import type {
   LabRequest,
   TestExecution,
@@ -6,7 +7,37 @@ import type {
   MaintenanceRecord,
   CuringTank,
   CuringRecord,
+  SamplingSeries,
+  Mold,
+  SamplingSeriesPhoto,
 } from '../types';
+
+export const seriesApi = {
+  list: listResource<SamplingSeries>('/series/'),
+  get: getResource<SamplingSeries>('/series/'),
+  create: createResource<SamplingSeries, Partial<SamplingSeries>>('/series/'),
+  update: updateResource<SamplingSeries>('/series/'),
+  patch: patchResource<SamplingSeries>('/series/'),
+  remove: removeResource('/series/'),
+};
+
+export const seriesPhotoApi = {
+  create: (formData: FormData) =>
+    apiRequest<SamplingSeriesPhoto>({
+      method: 'POST',
+      url: 'series-photos/',
+      data: formData,
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+};
+
+export const moldApi = {
+  list: listResource<Mold>('/molds/'),
+  get: getResource<Mold>('/molds/'),
+  update: updateResource<Mold>('/molds/'),
+  patch: patchResource<Mold>('/molds/'),
+  remove: removeResource('/molds/'),
+};
 
 export const requestApi = {
   list: listResource<LabRequest>('/lab-requests/'),

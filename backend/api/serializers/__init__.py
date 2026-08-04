@@ -7,8 +7,7 @@ from api.serializers.factory import FactorySerializer
 from api.serializers.client import ClientSerializer
 from api.serializers.project import ProjectWriteSerializer, ProjectReadSerializer
 from api.serializers.sample import SampleWriteSerializer, SampleReadSerializer
-from api.serializers.sample_type import SampleTypeSerializer
-from api.serializers.catalog import TestTypeSerializer, AcceptanceCriteriaSerializer
+from api.serializers.catalog import SampleTypeSerializer, TestTypeSerializer, AcceptanceCriteriaSerializer
 from api.serializers.sampling_series import (
     SamplingSeriesWriteSerializer, SamplingSeriesReadSerializer,
     SamplingSeriesPhotoSerializer,

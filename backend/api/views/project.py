@@ -17,6 +17,7 @@ class ProjectViewSet(ScopedModelViewSet):
     def get_queryset(self):
         return (
             scope_projects(self.request.user)
+            .with_financials()
             .select_related('owner', 'client', 'factory')
             .prefetch_related(
                 'samples__series__molds', 'samples__series__photos',

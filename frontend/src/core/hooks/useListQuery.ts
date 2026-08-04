@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ListParams } from '../services/core';
 import type { Paginated } from '../types';
 
@@ -12,5 +12,7 @@ export function useListQuery<T>(
     queryKey: [...key, params],
     queryFn: () => fetcher(params),
     enabled,
+    placeholderData: keepPreviousData,
+    staleTime: 15_000,
   });
 }

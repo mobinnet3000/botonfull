@@ -22,11 +22,13 @@ import { formatDate, formatNumber } from '../../core/utils/format';
 import { useApp } from '../../core/contexts/AppContext';
 import { usePageTitle } from '../../core/hooks/usePageTitle';
 import { StatusChip } from '../../shared/components/StatusChip';
+import { AppBreadcrumbs } from '../../shared/components/AppBreadcrumbs';
 import { QrCodeBlock, BarcodeBlock } from '../../shared/components/Codes';
 import { FileUpload } from '../../shared/components/FileUpload';
 import { useMutation } from '@tanstack/react-query';
 import { useSnackbar } from 'notistack';
 import { getErrorMessage } from '../../core/api/client';
+import { moldGroup, MOLD_GROUP_LABELS, moldDue, dueLabel, collectAllMolds, type MoldGroup } from '../../core/utils/molds';
 
 const STATUS_OPTIONS = ['created', 'received', 'waiting', 'stored', 'curing', 'ready_for_test', 'testing', 'completed', 'reported', 'archived', 'cancelled'];
 
@@ -81,6 +83,13 @@ export default function SampleDetailPage() {
 
   return (
     <Box className="fadeIn">
+      <AppBreadcrumbs
+        crumbs={[
+          { label: t('nav.projects'), path: '/projects' },
+          { label: sample.category, path: `/projects/${sample.project}` },
+          { label: sample.code },
+        ]}
+      />
       <Stack direction="row" alignItems="center" gap={1} mb={2}>
         <IconButton onClick={() => window.history.back()}>
           <ArrowBack />
@@ -226,18 +235,52 @@ export default function SampleDetailPage() {
       {tab === 3 && (
         <Card variant="outlined">
           <CardContent>
-            <Typography variant="subtitle1" mb={1}>
-              آزمون‌های این نمونه
+            <Typography variant="subtitle1" mb={2}>
+              چرخه قالب‌های نمونه
             </Typography>
-            {(sample.series ?? []).flatMap((s) =>
-              (s.molds ?? []).map((m) => (
-                <Box key={m.id} mb={1}>
-                  <Typography variant="body2">
-                    {m.sample_identifier} — بار شکست: {m.breaking_load ?? '-'} ({m.is_done ? 'شکسته شده' : 'در انتظار'})
-                  </Typography>
-                </Box>
-              )),
-            )}
+            <Grid container spacing={2}>
+              {(Object.keys(MOLD_GROUP_LABELS) as MoldGroup[]).map((group) => {
+                const groupMolds = collectAllMolds([sample]).filter((m) => moldGroup(m) === group);
+                return (
+                  <Grid key={group} size={{ xs: 12, sm: 6, md: 3 }}>
+                    <Box sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2, p: 1.5, minHeight: 140 }}>
+                      <Typography variant="subtitle2" fontWeight={700} color="primary" mb={1}>
+                        {MOLD_GROUP_LABELS[group]} ({groupMolds.length})
+                      </Typography>
+                      {groupMolds.length === 0 ? (
+                        <Typography color="text.secondary" variant="body2">
+                          قالبی ثبت نشده
+                        </Typography>
+                      ) : (
+                        groupMolds.map((m) => {
+                          const info = moldDue(m);
+                          return (
+                            <Stack key={m.id} gap={0.5} mb={1}>
+                              <Stack direction="row" alignItems="center" gap={1} flexWrap="wrap">
+                                <Chip size="small" label={m.sample_identifier} variant="outlined" />
+                                <Chip
+                                  size="small"
+                                  label={m.is_done ? 'انجام شده' : info.isOverdue ? 'دیرکرد' : 'در انتظار'}
+                                  color={m.is_done ? 'success' : info.isOverdue ? 'error' : 'warning'}
+                                />
+                              </Stack>
+                              <Typography variant="caption" color="text.secondary">
+                                موعد: {formatDate(m.deadline)} — {dueLabel(info)}
+                              </Typography>
+                              {m.breaking_load !== null && m.breaking_load !== undefined && (
+                                <Typography variant="body2" fontWeight={600}>
+                                  بار شکست: {m.breaking_load}
+                                </Typography>
+                              )}
+                            </Stack>
+                          );
+                        })
+                      )}
+                    </Box>
+                  </Grid>
+                );
+              })}
+            </Grid>
           </CardContent>
         </Card>
       )}

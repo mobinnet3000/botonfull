@@ -24,6 +24,7 @@ import { formatDate } from '../../core/utils/format';
 import { useApp } from '../../core/contexts/AppContext';
 import { usePageTitle } from '../../core/hooks/usePageTitle';
 import { StatusChip } from '../../shared/components/StatusChip';
+import { AppBreadcrumbs } from '../../shared/components/AppBreadcrumbs';
 import { QrCodeBlock, BarcodeBlock } from '../../shared/components/Codes';
 import { PdfViewer } from '../../shared/components/PdfViewer';
 import { downloadFile } from '../../core/api/client';
@@ -75,6 +76,12 @@ export default function ReportDetailPage() {
 
   return (
     <Box className="fadeIn">
+      <AppBreadcrumbs
+        crumbs={[
+          { label: t('nav.reports'), path: '/reports' },
+          { label: report.report_number },
+        ]}
+      />
       <Stack direction="row" alignItems="center" gap={1} mb={2} flexWrap="wrap">
         <IconButton onClick={() => window.history.back()}>
           <ArrowBack />

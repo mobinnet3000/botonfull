@@ -62,14 +62,14 @@ export function NumberInput<T extends FieldValues>({
   label,
   required,
 }: {
-  name: Path<T>;
+  name: string;
   label: string;
   required?: boolean;
 }) {
   const { control } = useFormContext<T>();
   return (
     <Controller
-      name={name}
+      name={name as Path<T>}
       control={control}
       render={({ field, fieldState }) => (
         <TextField

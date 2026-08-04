@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from django.db.models import Sum
 
 from api.models import Project
 from api.services.project_service import ProjectService
@@ -56,13 +55,11 @@ class ProjectReadSerializer(ProjectWriteSerializer):
 
     @staticmethod
     def get_total_income(obj: Project) -> float:
-        total = obj.transactions.filter(type='income').aggregate(total=Sum('amount'))['total']
-        return float(total) if total else 0.0
+        return float(getattr(obj, 'total_income', None) or 0)
 
     @staticmethod
     def get_total_expense(obj: Project) -> float:
-        total = obj.transactions.filter(type='expense').aggregate(total=Sum('amount'))['total']
-        return float(total) if total else 0.0
+        return float(getattr(obj, 'total_expense', None) or 0)
 
     def get_balance(self, obj: Project) -> float:
         return self.get_total_income(obj) - self.get_total_expense(obj)

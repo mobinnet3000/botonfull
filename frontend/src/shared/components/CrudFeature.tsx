@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSnackbar } from 'notistack';
 import { useMemo, useState, type ReactNode } from 'react';
 import { Add, Delete, Edit } from '@mui/icons-material';
@@ -65,6 +65,8 @@ export function CrudFeature<T extends { id: number }>({
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: [...queryKey, params],
     queryFn: () => fetcher(params),
+    placeholderData: keepPreviousData,
+    staleTime: 15_000,
   });
 
   const deleteMutation = useMutation({

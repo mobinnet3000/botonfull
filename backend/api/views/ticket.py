@@ -5,11 +5,13 @@ from api.serializers import TicketSerializer, TicketMessageSerializer
 from api.permissions import OwnResourcePermission
 from api.roles import ADMIN, get_role
 from api.views.base import ScopedModelViewSet
+from api.filters import TicketFilter
 
 
 class TicketViewSet(viewsets.ModelViewSet):
     serializer_class = TicketSerializer
     permission_classes = [OwnResourcePermission]
+    filterset_class = TicketFilter
     filterset_fields = ['status', 'priority']
     search_fields = ['title']
 

@@ -11,6 +11,7 @@ class FullDataSelector:
     def get_full_user_data(user: User) -> dict:
         projects = (
             scope_projects(user)
+            .with_financials()
             .select_related('owner')
             .prefetch_related(
                 Prefetch(

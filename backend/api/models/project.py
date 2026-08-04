@@ -20,6 +20,23 @@ PROJECT_PRIORITY_CHOICES = [
 ]
 
 
+class ProjectQuerySet(models.QuerySet):
+    def active(self):
+        return self.filter(status='active')
+
+    def with_financials(self):
+        """حاشیه‌نویسی درآمد/هزینه/تراز برای جلوگیری از کوئری‌های N+1."""
+        from django.db.models import Q, Sum
+        return self.annotate(
+            total_income=Sum('transactions__amount', filter=Q(transactions__type='income')),
+            total_expense=Sum('transactions__amount', filter=Q(transactions__type='expense')),
+        )
+
+
+class ProjectManager(models.Manager.from_queryset(ProjectQuerySet)):
+    pass
+
+
 class Project(models.Model):
     owner = models.ForeignKey(
         'LabProfile', on_delete=models.CASCADE, related_name='projects',
@@ -100,6 +117,8 @@ class Project(models.Model):
         'Factory', on_delete=models.SET_NULL, null=True, blank=True,
         related_name='projects', verbose_name='کارخانه تامین بتن',
     )
+
+    objects = ProjectManager()
 
     class Meta:
         verbose_name = 'پروژه'
