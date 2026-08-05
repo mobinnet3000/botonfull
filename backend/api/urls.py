@@ -6,7 +6,8 @@ from rest_framework.authtoken.views import obtain_auth_token
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
 from api.views import (
-    TransactionViewSet, LabProfileViewSet, ProjectViewSet, SampleViewSet,
+    TransactionViewSet, LabProfileViewSet, ProjectViewSet, ProjectSettingsViewSet,
+    SampleViewSet, StructuralMemberViewSet, PourSeriesViewSet,
     SamplingSeriesViewSet, SamplingSeriesPhotoViewSet, MoldViewSet,
     TicketViewSet, TicketMessageViewSet,
     UserRegistrationView, FullUserDataView,
@@ -25,7 +26,10 @@ router.register(r'profiles', LabProfileViewSet, basename='profiles')
 router.register(r'factories', FactoryViewSet, basename='factories')
 router.register(r'clients', ClientViewSet, basename='clients')
 router.register(r'projects', ProjectViewSet, basename='projects')
+router.register(r'project-settings', ProjectSettingsViewSet, basename='project-settings')
 router.register(r'samples', SampleViewSet, basename='samples')
+router.register(r'structural-members', StructuralMemberViewSet, basename='structural-members')
+router.register(r'pour-series', PourSeriesViewSet, basename='pour-series')
 router.register(r'sample-types', SampleTypeViewSet, basename='sample-types')
 router.register(r'test-types', TestTypeViewSet, basename='test-types')
 router.register(r'series', SamplingSeriesViewSet, basename='series')

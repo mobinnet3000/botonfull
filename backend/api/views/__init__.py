@@ -3,9 +3,12 @@ from api.views.lab_profile import LabProfileViewSet
 from api.views.factory import FactoryViewSet
 from api.views.client import ClientViewSet
 from api.views.project import ProjectViewSet
+from api.views.project_settings import ProjectSettingsViewSet
 from api.views.sample import SampleViewSet
 from api.views.sampling_series import SamplingSeriesViewSet, SamplingSeriesPhotoViewSet
 from api.views.mold import MoldViewSet
+from api.views.structural_member import StructuralMemberViewSet
+from api.views.pour_series import PourSeriesViewSet
 from api.views.transaction import TransactionViewSet
 from api.views.ticket import TicketViewSet, TicketMessageViewSet
 from api.views.catalog import SampleTypeViewSet, TestTypeViewSet, AcceptanceCriteriaViewSet
@@ -26,10 +29,13 @@ __all__ = [
     'FactoryViewSet',
     'ClientViewSet',
     'ProjectViewSet',
+    'ProjectSettingsViewSet',
     'SampleViewSet',
     'SamplingSeriesViewSet',
     'SamplingSeriesPhotoViewSet',
     'MoldViewSet',
+    'StructuralMemberViewSet',
+    'PourSeriesViewSet',
     'TransactionViewSet',
     'TicketViewSet',
     'TicketMessageViewSet',

@@ -32,6 +32,12 @@ class Sample(models.Model):
     project = models.ForeignKey(
         'Project', on_delete=models.CASCADE, related_name='samples',
         db_index=True,
+        verbose_name='\u067e\u0631\u0648\u0698\u0647',
+    )
+    structural_member = models.ForeignKey(
+        'StructuralMember', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='samples', db_index=True,
+        verbose_name='\u0639\u0636\u0648 \u0633\u0627\u0632\u0647\u200c\u0627\u06cc',
     )
 
     code = models.CharField(

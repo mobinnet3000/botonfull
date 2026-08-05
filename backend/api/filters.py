@@ -1,6 +1,6 @@
 import django_filters
 from django.db import models
-from api.models import Project, Sample, Mold, Transaction, Ticket, LabRequest, TestExecution, Report
+from api.models import Project, Sample, Mold, Transaction, Ticket, LabRequest, TestExecution, Report, StructuralMember, PourSeries
 
 
 class ProjectFilter(django_filters.FilterSet):
@@ -102,4 +102,27 @@ class ReportFilter(django_filters.FilterSet):
             'project': ['exact'],
             'sample': ['exact'],
             'created_at': ['gte', 'lte'],
+        }
+
+
+class StructuralMemberFilter(django_filters.FilterSet):
+    class Meta:
+        model = StructuralMember
+        fields = {
+            'project': ['exact'],
+            'member_type': ['exact'],
+            'name': ['icontains'],
+        }
+
+
+class PourSeriesFilter(django_filters.FilterSet):
+    class Meta:
+        model = PourSeries
+        fields = {
+            'structural_member': ['exact'],
+            'structural_member__project': ['exact'],
+            'pour_date': ['gte', 'lte'],
+            'name': ['icontains'],
+            'truck_number': ['icontains'],
+            'batch_number': ['icontains'],
         }

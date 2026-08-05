@@ -89,6 +89,11 @@ export interface FullUserData {
 export type ProjectStatus = 'active' | 'on_hold' | 'completed' | 'cancelled';
 export type Priority = 'low' | 'medium' | 'high' | 'urgent';
 
+export type StructuralMemberType = 'foundation' | 'column' | 'beam' | 'wall' | 'slab' | 'stair' | 'other';
+
+export type MoldStatus = 'pending' | 'in_progress' | 'completed' | 'rejected' | 'overdue';
+export type MoldPriority = 'low' | 'medium' | 'high' | 'urgent';
+
 export interface Project {
   id: number;
   owner: number;
@@ -565,3 +570,16 @@ export interface QcAnalysis {
   criteria: { id: number; name: string } | null;
   compliance: { passed: boolean; checks: { rule: string; passed: boolean; limit?: number; value?: number }[] };
 }
+
+// Re-export hierarchy types
+export type {
+  StructuralMemberType,
+  MoldStatus,
+  MoldPriority,
+  StructuralMember,
+  PourSeries,
+  ProjectSettings,
+  PourSummary,
+  MemberSummary,
+  ProjectHierarchySummary,
+} from './hierarchy';
