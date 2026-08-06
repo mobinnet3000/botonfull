@@ -1,6 +1,9 @@
 from datetime import timedelta
+
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils import timezone
+
 from api.models import PourSeries, Mold, ProjectSettings
 from utils.naming import generate_mold_identifier
 
@@ -11,10 +14,22 @@ class PourSeriesService:
     @transaction.atomic
     def create_pour_with_molds(validated_data: dict) -> PourSeries:
         mold_ages = validated_data.pop('mold_ages', [])
-        mold_count = validated_data.pop('mold_count', 1)
-        structural_member = validated_data['structural_member']
+        mold_count = validated_data.pop('mold_count', None)
+
+        structural_member = validated_data.get('structural_member')
+        if structural_member is None:
+            raise ValidationError('ریز بتن باید به یک عضو سازه‌ای تعلق داشته باشد.')
+
+        if validated_data.get('pour_date') is None:
+            validated_data['pour_date'] = timezone.now()
+
         project = structural_member.project
-        project_settings = getattr(project, 'settings', None)
+        project_settings = getattr(project, 'settings', None) or ProjectSettings.objects.filter(project=project).first()
+
+        if not mold_ages:
+            mold_ages = (project_settings.default_mold_ages if project_settings else []) or []
+        if mold_count is None:
+            mold_count = project_settings.default_mold_count if project_settings else 1
 
         pour = PourSeries.objects.create(**validated_data)
 
@@ -30,9 +45,10 @@ class PourSeriesService:
         count_per_age: int,
         settings: ProjectSettings | None,
     ) -> list[Mold]:
-        now = timezone.now()
+        if count_per_age < 1:
+            count_per_age = 1
         molds_to_create: list[Mold] = []
-        age_list = list(set(a for a in ages if a > 0))
+        age_list = sorted({a for a in ages if a > 0})
 
         for age in age_list:
             label = settings.get_age_label(age) if settings else f'{age} روزه'
@@ -43,7 +59,7 @@ class PourSeriesService:
                         age_in_days=age,
                         mass=0.0,
                         breaking_load=0.0,
-                        deadline=now + timedelta(days=age),
+                        deadline=pour.pour_date + timedelta(days=age),
                         sample_identifier=generate_mold_identifier(
                             pour.structural_member.name, age,
                             pour.name or str(pour.id),

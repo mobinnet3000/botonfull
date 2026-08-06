@@ -18,7 +18,7 @@ from api.views import (
     CuringTankViewSet, CuringRecordViewSet,
     ReportViewSet, NotificationViewSet,
     AppFileViewSet, ActivityLogViewSet, AdminUserViewSet,
-    DashboardView, QcAnalysisView,
+    DashboardView, QcAnalysisView, CalendarScheduleView,
 )
 
 router = DefaultRouter()
@@ -56,6 +56,7 @@ urlpatterns = [
     path('login/', obtain_auth_token, name='login'),
     path('full-data/', FullUserDataView.as_view(), name='full-data'),
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
+    path('calendar/schedule/', CalendarScheduleView.as_view(), name='calendar-schedule'),
     path('qc/analysis/', QcAnalysisView.as_view(), name='qc-analysis'),
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     path('docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),

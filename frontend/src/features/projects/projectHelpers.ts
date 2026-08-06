@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import type { Project, SamplingSeries, Mold, StructuralMember } from '../../core/types';
+import type { Project, Mold, StructuralMember, PourSeries } from '../../core/types';
 
 export interface PourSummary {
   total: number;
@@ -10,7 +10,7 @@ export interface PourSummary {
   nextDueLabel: string;
 }
 
-export function summarizeSeries(series: SamplingSeries): PourSummary {
+export function summarizeSeries(series: PourSeries | { molds?: Mold[] }): PourSummary {
   const molds = series.molds ?? [];
   const today = dayjs().startOf('day');
   let dueToday = 0;

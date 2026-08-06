@@ -20,11 +20,14 @@ class QcService:
         mean = statistics.mean(values)
         stdev = statistics.stdev(values) if len(values) > 1 else 0.0
         cv = (stdev / mean * 100) if mean else None
-        q1 = statistics.quantiles(values, n=4)[0]
-        q3 = statistics.quantiles(values, n=4)[2]
-        iqr = q3 - q1
-        lo, hi = q1 - 1.5 * iqr, q3 + 1.5 * iqr
-        outliers = [v for v in values if v < lo or v > hi]
+        if len(values) >= 4:
+            q1 = statistics.quantiles(values, n=4)[0]
+            q3 = statistics.quantiles(values, n=4)[2]
+            iqr = q3 - q1
+            lo, hi = q1 - 1.5 * iqr, q3 + 1.5 * iqr
+            outliers = [v for v in values if v < lo or v > hi]
+        else:
+            outliers = []
         return {
             'count': len(values),
             'mean': round(mean, 2),

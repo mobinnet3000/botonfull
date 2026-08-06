@@ -20,6 +20,7 @@ from api.views.notification import NotificationViewSet
 from api.views.file import AppFileViewSet, ActivityLogViewSet
 from api.views.admin import AdminUserViewSet
 from api.views.dashboard import DashboardView, QcAnalysisView
+from api.views.calendar import CalendarScheduleView
 
 __all__ = [
     'UserRegistrationView',
@@ -53,4 +54,5 @@ __all__ = [
     'AdminUserViewSet',
     'DashboardView',
     'QcAnalysisView',
+    'CalendarScheduleView',
 ]

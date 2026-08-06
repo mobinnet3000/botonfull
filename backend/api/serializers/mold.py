@@ -1,11 +1,17 @@
 from rest_framework import serializers
+from django.utils import timezone
 from api.models import Mold
-from api.serializers.pourseries import PourSeriesReadSerializer
 
 
 class MoldReadSerializer(serializers.ModelSerializer):
     project_name = serializers.CharField(
         source='pour_series.structural_member.project.project_name', read_only=True,
+    )
+    project_id = serializers.IntegerField(
+        source='pour_series.structural_member.project_id', read_only=True, default=None,
+    )
+    member_id = serializers.IntegerField(
+        source='pour_series.structural_member_id', read_only=True, default=None,
     )
     member_name = serializers.CharField(
         source='pour_series.structural_member.name', read_only=True,
@@ -18,6 +24,8 @@ class MoldReadSerializer(serializers.ModelSerializer):
     technician_username = serializers.CharField(source='technician.username', read_only=True, default=None)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     priority_display = serializers.CharField(source='get_priority_display', read_only=True)
+    remaining_days = serializers.SerializerMethodField()
+    is_overdue = serializers.SerializerMethodField()
 
     class Meta:
         model = Mold
@@ -28,12 +36,20 @@ class MoldReadSerializer(serializers.ModelSerializer):
             'priority_display', 'technician', 'technician_username',
             'created_at', 'completed_at', 'deadline',
             'pre_break_image', 'post_break_image',
-            'project_name', 'member_name', 'member_type', 'pour_name',
-            'pour_date', 'is_done',
+            'project_name', 'project_id', 'member_id', 'member_name', 'member_type',
+            'pour_name', 'pour_date', 'is_done', 'remaining_days', 'is_overdue',
         ]
         read_only_fields = [
-            'id', 'created_at', 'is_done',
+            'id', 'created_at', 'is_done', 'remaining_days', 'is_overdue',
         ]
+
+    def get_remaining_days(self, obj):
+        if obj.is_done or not obj.deadline:
+            return 0
+        return (obj.deadline.date() - timezone.now().date()).days
+
+    def get_is_overdue(self, obj):
+        return not obj.is_done and bool(obj.deadline) and obj.deadline.date() < timezone.now().date()
 
 
 class MoldSerializer(MoldReadSerializer):

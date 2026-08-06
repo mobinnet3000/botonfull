@@ -16,12 +16,13 @@ class PourSeriesWriteSerializer(serializers.ModelSerializer):
         child=serializers.IntegerField(min_value=1),
         write_only=True,
         required=False,
-        help_text='لیست سن قالب‌ها برای ساخت خودکار',
+        help_text='لیست سن قالب‌ها؛ در صورت نبود از تنظیمات پیش‌فرض پروژه استفاده می‌شود.',
     )
     mold_count = serializers.IntegerField(
-        write_only=True, required=False, default=1,
-        help_text='تعداد قالب برای هر سن',
+        write_only=True, required=False,
+        help_text='تعداد قالب برای هر سن؛ پیش‌فرض از تنظیمات پروژه.',
     )
+    pour_date = serializers.DateTimeField(required=False)
 
     class Meta:
         model = PourSeries
@@ -33,6 +34,11 @@ class PourSeriesWriteSerializer(serializers.ModelSerializer):
             'mold_ages', 'mold_count',
         ]
         read_only_fields = ['id']
+        extra_kwargs = {
+            'structural_member': {
+                'error_messages': {'required': 'انتخاب عضو سازه‌ای برای ریز بتن الزامی است.'},
+            },
+        }
 
     def validate_structural_member(self, value):
         from api.access import can_write_lab_resource

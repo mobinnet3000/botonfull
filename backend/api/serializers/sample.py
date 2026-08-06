@@ -6,6 +6,7 @@ from api.validators import validate_specimen_type
 from api.access import can_write_lab_resource, project_of
 from api.services.sample_service import SampleService
 from api.serializers.sampling_series import SamplingSeriesReadSerializer
+from api.serializers.pourseries import PourSeriesReadSerializer
 from api.constants import (
     DEFAULT_CONCRETE_TEMPERATURE, DEFAULT_SLUMP,
     SERIES_VOLUME_DIVISOR,
@@ -57,6 +58,10 @@ class SampleReadSerializer(SampleWriteSerializer):
     age_in_days = serializers.IntegerField(read_only=True)
     series = SamplingSeriesReadSerializer(many=True, read_only=True)
     sample_type_name = serializers.CharField(source='sample_type.name', read_only=True, default=None)
+    project_name = serializers.CharField(source='project.project_name', read_only=True, default=None)
+    pour_series = PourSeriesReadSerializer(many=True, read_only=True)
 
     class Meta(SampleWriteSerializer.Meta):
-        fields = SampleWriteSerializer.Meta.fields + ['age_in_days', 'sample_type_name', 'series']
+        fields = SampleWriteSerializer.Meta.fields + [
+            'age_in_days', 'sample_type_name', 'project_name', 'pour_series', 'series',
+        ]

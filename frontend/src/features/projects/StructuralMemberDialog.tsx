@@ -3,28 +3,32 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Stack } from '@mui/material';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import dayjs from 'dayjs';
-import { sampleApi } from '../../core/services/samples';
+import { structuralMemberApi } from '../../core/services/domain';
 import { TextInput, SelectInput } from '../../shared/components/form/FormField';
 import { FormActions } from '../../shared/components/form/FormActions';
 import { useSnackbar } from 'notistack';
 import { getErrorMessage } from '../../core/api/client';
 
 const schema = z.object({
-  category: z.string().min(1, 'نام عضو سازه‌ای الزامی است'),
+  name: z.string().min(1, 'نام عضو سازه‌ای الزامی است'),
+  member_type: z.string().optional(),
   description: z.string().optional(),
-  sampling_location: z.string().optional(),
-  current_location: z.string().optional(),
-  cement_grade: z.string().optional(),
-  concrete_factory: z.string().optional(),
-  status: z.string().optional(),
-  notes: z.string().optional(),
 });
 type FormValues = z.infer<typeof schema>;
 
+const MEMBER_TYPES = [
+  { value: 'foundation', label: 'فنداسیون' },
+  { value: 'column', label: 'ستون' },
+  { value: 'beam', label: 'تیر' },
+  { value: 'wall', label: 'دیوار' },
+  { value: 'slab', label: 'سقف' },
+  { value: 'stair', label: 'پله' },
+  { value: 'other', label: 'سایر' },
+];
+
 interface StructuralMemberDialogProps {
   projectId: number;
-    onClose: () => void;
+  onClose: () => void;
 }
 
 export function StructuralMemberDialog({ projectId, onClose }: StructuralMemberDialogProps) {
@@ -32,63 +36,35 @@ export function StructuralMemberDialog({ projectId, onClose }: StructuralMemberD
   const qc = useQueryClient();
   const methods = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      category: '',
-      status: 'created',
-      cement_grade: '350',
-    },
+    defaultValues: { name: '', member_type: 'foundation', description: '' },
   });
 
   const mutation = useMutation({
     mutationFn: (d: FormValues) =>
-      sampleApi.create({
+      structuralMemberApi.create({
         project: projectId,
-        category: d.category,
+        name: d.name,
+        member_type: (d.member_type as 'foundation') ?? 'other',
         description: d.description ?? '',
-        sampling_location: d.sampling_location ?? '',
-        current_location: d.current_location ?? '',
-        cement_grade: d.cement_grade || '350',
-        concrete_factory: d.concrete_factory ?? '',
-        status: (d.status as 'created') ?? 'created',
-        date: dayjs().toISOString(),
-        sampling_volume: 1,
-      } as any),
+      }),
     onSuccess: () => {
       enqueueSnackbar('عضو سازه‌ای ایجاد شد', { variant: 'success' });
       qc.invalidateQueries({ queryKey: ['projects', projectId] });
       onClose();
     },
-    onError: (err) => enqueueSnackbar(getErrorMessage(err), { variant: 'error' }),
+    onError: (e) => enqueueSnackbar(getErrorMessage(e), { variant: 'error' }),
   });
 
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit((d) => mutation.mutate(d))}>
         <Stack gap={2}>
-          <TextInput<FormValues> name="category" label="نام عضو سازه‌ای" required />
+          <TextInput<FormValues> name="name" label="نام عضو سازه‌ای (مثال: فنداسیون شمالی)" required />
+          <SelectInput<FormValues> name="member_type" label="نوع عضو" options={MEMBER_TYPES} />
           <TextInput<FormValues> name="description" label="توضیحات" multiline rows={2} />
-          <Stack direction="row" gap={2}>
-            <TextInput<FormValues> name="sampling_location" label="موقعیت" />
-            <TextInput<FormValues> name="cement_grade" label="عیار سیمان" />
-          </Stack>
-          <TextInput<FormValues> name="concrete_factory" label="کارخانه بتن" />
-          <SelectInput<FormValues>
-            name="status"
-            label="وضعیت"
-            options={[
-              { value: 'created', label: 'ایجاد شده' },
-              { value: 'received', label: 'دریافت شده' },
-              { value: 'waiting', label: 'در انتظار' },
-              { value: 'testing', label: 'در حال آزمون' },
-              { value: 'completed', label: 'تکمیل شده' },
-            ]}
-          />
-          <TextInput<FormValues> name="notes" label="یادداشت" multiline rows={2} />
           <FormActions onCancel={onClose} loading={mutation.isPending} />
         </Stack>
       </form>
     </FormProvider>
   );
 }
-
-

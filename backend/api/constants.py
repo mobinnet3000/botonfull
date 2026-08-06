@@ -24,6 +24,22 @@ TRANSACTION_TYPE_CHOICES = [
     ('expense', 'هزینه/برداشت'),
 ]
 
+TRANSACTION_CATEGORY_CHOICES = [
+    ('labor', 'نیروی کار'),
+    ('material', 'مواد و مصالح'),
+    ('equipment', 'تجهیزات'),
+    ('transport', 'حمل‌ونقل'),
+    ('testing', 'آزمایشگاهی'),
+    ('consulting', 'مشاوره'),
+    ('other', 'سایر'),
+]
+
+TRANSACTION_METHOD_CHOICES = [
+    ('cash', 'نقدی'),
+    ('bank', 'بانکی'),
+    ('check', 'چک'),
+]
+
 TICKET_STATUS_CHOICES = [
     ('open', 'باز'),
     ('in_progress', 'در حال بررسی'),

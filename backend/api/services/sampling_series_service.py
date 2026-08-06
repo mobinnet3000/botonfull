@@ -1,10 +1,6 @@
-from datetime import timedelta
-
 from django.db import transaction
-from django.utils import timezone
 
-from api.models import SamplingSeries, Mold
-from utils.naming import generate_mold_identifier
+from api.models import SamplingSeries
 
 
 class SamplingSeriesService:
@@ -12,30 +8,11 @@ class SamplingSeriesService:
     @staticmethod
     @transaction.atomic
     def create_series_with_molds(validated_data: dict) -> SamplingSeries:
-        mold_ages = validated_data.pop('mold_ages', [])
-        series = SamplingSeries.objects.create(**validated_data)
+        """سری نمونه را می‌سازد.
 
-        if mold_ages:
-            SamplingSeriesService._bulk_create_molds(series, mold_ages)
-
-        return series
-
-    @staticmethod
-    def _bulk_create_molds(series: SamplingSeries, mold_ages: list[int]) -> list[Mold]:
-        now = timezone.now()
-        molds_to_create: list[Mold] = []
-        for age in mold_ages:
-            molds_to_create.append(
-                Mold(
-                    series=series,
-                    age_in_days=age,
-                    mass=0.0,
-                    breaking_load=0.0,
-                    deadline=now + timedelta(days=age),
-                    sample_identifier=generate_mold_identifier(
-                        series.sample.category, age,
-                        series.name or str(series.id),
-                    ),
-                )
-            )
-        return Mold.objects.bulk_create(molds_to_create)
+        قالب‌ها تنها در ساختار یکپارچه «پروژه → عضو سازه‌ای → ریز بتن → قالب»
+        ساخته می‌شوند؛ لذا این سرویس دیگر قالب ایجاد نمی‌کند. فیلد `mold_ages`
+        برای سازگاری عقب‌مانده پذیرفته و نادیده گرفته می‌شود.
+        """
+        validated_data.pop('mold_ages', None)
+        return SamplingSeries.objects.create(**validated_data)

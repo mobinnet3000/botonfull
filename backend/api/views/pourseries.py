@@ -4,12 +4,14 @@ from api.serializers import PourSeriesReadSerializer, PourSeriesWriteSerializer
 from api.access import scope_by_project
 from api.roles import ADMIN, LAB_MANAGER, TECHNICIAN
 from api.views.base import ScopedModelViewSet
+from api.filters import PourSeriesFilter
 
 
 class PourSeriesViewSet(ScopedModelViewSet):
     write_roles = (ADMIN, LAB_MANAGER, TECHNICIAN)
     parser_classes = [parsers.MultiPartParser, parsers.FormParser, parsers.JSONParser]
     search_fields = ['name', 'truck_number', 'batch_number']
+    filterset_class = PourSeriesFilter
 
     def get_queryset(self):
         return (

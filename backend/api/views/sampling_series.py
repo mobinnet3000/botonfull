@@ -22,7 +22,7 @@ class SamplingSeriesViewSet(ScopedModelViewSet):
                 SamplingSeries.objects.select_related('sample__project'),
                 'sample__project',
             )
-            .prefetch_related('molds', 'photos')
+            .prefetch_related('photos')
         )
 
     def get_serializer_class(self):

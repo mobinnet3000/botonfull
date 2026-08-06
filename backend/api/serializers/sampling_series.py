@@ -1,8 +1,7 @@
 from rest_framework import serializers
-from api.models import SamplingSeries, SamplingSeriesPhoto, Mold
+from api.models import SamplingSeries, SamplingSeriesPhoto
 from api.access import can_write_lab_resource, project_of
 from api.services.sampling_series_service import SamplingSeriesService
-from api.serializers.mold import MoldSerializer
 
 
 class SamplingSeriesPhotoSerializer(serializers.ModelSerializer):
@@ -16,8 +15,8 @@ class SamplingSeriesWriteSerializer(serializers.ModelSerializer):
     mold_ages = serializers.ListField(
         child=serializers.IntegerField(min_value=1),
         write_only=True,
-        required=True,
-        help_text='لیستی از سن قالب‌ها برای ساخت خودکار. مثال: [7, 28]',
+        required=False,
+        help_text='پذیرفته برای سازگاری عقب‌مانده؛ قالب‌ها از مسیر ریز بتن ساخته می‌شوند.',
     )
 
     class Meta:
@@ -42,7 +41,6 @@ class SamplingSeriesWriteSerializer(serializers.ModelSerializer):
 
 class SamplingSeriesReadSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
-    molds = MoldSerializer(many=True, read_only=True)
     photos = SamplingSeriesPhotoSerializer(many=True, read_only=True)
 
     class Meta:
@@ -52,7 +50,7 @@ class SamplingSeriesReadSerializer(serializers.ModelSerializer):
             'concrete_temperature', 'concrete_temperature_image',
             'slump', 'slump_image',
             'axis', 'has_additive',
-            'molds', 'photos',
+            'photos',
         ]
 
     @staticmethod

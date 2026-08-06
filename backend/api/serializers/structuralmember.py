@@ -30,7 +30,29 @@ class StructuralMemberReadSerializer(StructuralMemberWriteSerializer):
         ]
 
     def get_pour_count(self, obj):
-        return obj.pour_series.count()
+        return getattr(obj, 'pour_count', None) or obj.pour_series.count()
 
     def get_mold_count(self, obj):
+        annotated = getattr(obj, 'mold_count', None)
+        if annotated is not None:
+            return annotated
         return sum(ps.molds.count() for ps in obj.pour_series.all())
+
+
+class StructuralMemberDetailSerializer(StructuralMemberReadSerializer):
+    """خواندن عمیق عضو سازه‌ای به همراه ریزها و قالب‌ها (برای درخت پروژه)."""
+
+    pour_series = PourSeriesReadSerializer(many=True, read_only=True)
+
+    class Meta(StructuralMemberReadSerializer.Meta):
+        fields = StructuralMemberReadSerializer.Meta.fields + ['pour_series']
+
+    def get_pour_count(self, obj):
+        return len(self._pours(obj))
+
+    def get_mold_count(self, obj):
+        return sum(len(ps.molds.all()) for ps in self._pours(obj))
+
+    @staticmethod
+    def _pours(obj):
+        return list(obj.pour_series.all())

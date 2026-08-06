@@ -14,6 +14,7 @@ from api.serializers.sampling_series import (
 )
 from api.serializers.mold import MoldSerializer
 from api.serializers.structuralmember import StructuralMemberReadSerializer, StructuralMemberWriteSerializer
+from api.serializers.projectsettings import ProjectSettingsSerializer
 from api.serializers.pourseries import PourSeriesReadSerializer, PourSeriesWriteSerializer
 from api.serializers.transaction import TransactionSerializer
 from api.serializers.ticket import TicketSerializer, TicketMessageSerializer
@@ -46,6 +47,7 @@ __all__ = [
     'MoldSerializer',
     'StructuralMemberReadSerializer',
     'StructuralMemberWriteSerializer',
+    'ProjectSettingsSerializer',
     'PourSeriesReadSerializer',
     'PourSeriesWriteSerializer',
     'TransactionSerializer',

@@ -3,23 +3,26 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Stack } from '@mui/material';
 import type { GridColDef } from '@mui/x-data-grid';
+import { useQuery } from '@tanstack/react-query';
 import { CrudFeature } from '../../shared/components/CrudFeature';
 import { sampleApi } from '../../core/services/samples';
+import { projectApi } from '../../core/services/projects';
 import type { Sample } from '../../core/types';
 import { useApp } from '../../core/contexts/AppContext';
 import { useAuth } from '../../core/auth/AuthContext';
 import { canWrite } from '../../core/auth/roles';
 import { StatusChip } from '../../shared/components/StatusChip';
-import { formatDate } from '../../core/utils/format';
+import { formatJalali } from '../../core/utils/jalali';
 import { TextInput, NumberInput, SelectInput, DateTimeField } from '../../shared/components/form/FormField';
 import { FormActions } from '../../shared/components/form/FormActions';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import { getErrorMessage } from '../../core/api/client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import dayjs from 'dayjs';
 
 const schema = z.object({
-  project: z.any(),
+  project: z.any().refine((v) => Number(v) > 0, 'انتخاب پروژه الزامی است'),
   date: z.string().optional(),
   sampling_volume: z.coerce.number().optional(),
   cement_grade: z.string().optional(),
@@ -61,12 +64,12 @@ export default function SamplesPage() {
   const columns: GridColDef<Sample>[] = [
     { field: 'code', headerName: 'کد', width: 150 },
     { field: 'category', headerName: 'رده', width: 130 },
-    { field: 'project', headerName: 'پروژه', width: 90, renderCell: (p) => `#${p.value}` },
+    { field: 'project_name', headerName: 'پروژه', width: 180 },
     { field: 'cement_grade', headerName: 'عیار', width: 90 },
     { field: 'specimen_type', headerName: 'نوع نمونه', width: 120 },
     { field: 'status', headerName: 'وضعیت', width: 140, renderCell: (p) => <StatusChip value={p.value as string} /> },
     { field: 'sampling_volume', headerName: 'حجم', width: 90 },
-    { field: 'date', headerName: 'تاریخ', width: 160, renderCell: (p) => formatDate(p.value as string, true) },
+    { field: 'date', headerName: 'تاریخ', width: 150, renderCell: (p) => formatJalali(p.value as string, true) },
   ];
 
   return (
@@ -86,29 +89,73 @@ export default function SamplesPage() {
 }
 
 function SampleForm({ record, onClose }: { record: Sample | null; onClose: () => void }) {
-  const { t } = useApp();
   const { enqueueSnackbar } = useSnackbar();
   const qc = useQueryClient();
+  const { data: projectsData } = useQuery({ queryKey: ['projects-for-sample-form'], queryFn: () => projectApi.list({ page_size: 200 }), staleTime: 60_000 });
+  const projects = projectsData?.results ?? [];
+
   const methods = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: (record ?? {}) as FormValues,
+    defaultValues: {
+      project: record?.project ?? '',
+      date: record?.date ?? dayjs().toISOString(),
+      sampling_volume: record?.sampling_volume ?? 70,
+      cement_grade: record?.cement_grade ?? '350',
+      cement_type: record?.cement_type ?? 'تیپ 1',
+      category: record?.category ?? '',
+      weather_condition: record?.weather_condition ?? 'آفتابی',
+      ambient_temperature: record?.ambient_temperature ?? 25,
+      concrete_factory: record?.concrete_factory ?? '',
+      specimen_type: record?.specimen_type ?? 'cube',
+      specimen_size: record?.specimen_size ?? 'cube_15',
+      sampling_location: record?.sampling_location ?? 'کارگاه',
+      status: record?.status ?? 'created',
+      current_location: record?.current_location ?? '',
+      description: record?.description ?? '',
+      weight: record?.weight ?? undefined,
+    },
   });
+
   const mutation = useMutation({
-    mutationFn: (d: FormValues) =>
-      record ? sampleApi.update(record.id, d as Partial<Sample>) : sampleApi.create(d as Partial<Sample>),
+    mutationFn: (d: FormValues) => {
+      const payload: Partial<Sample> = {
+        project: Number(d.project),
+        date: d.date ?? dayjs().toISOString(),
+        sampling_volume: d.sampling_volume ?? 70,
+        cement_grade: d.cement_grade || '350',
+        cement_type: d.cement_type ?? 'تیپ 1',
+        category: d.category || 'عمومی',
+        weather_condition: d.weather_condition || 'آفتابی',
+        ambient_temperature: d.ambient_temperature ?? 25,
+        concrete_factory: d.concrete_factory || '---',
+        specimen_type: d.specimen_type ?? 'cube',
+        specimen_size: d.specimen_size ?? 'cube_15',
+        sampling_location: d.sampling_location || 'کارگاه',
+        status: (d.status as Sample['status']) ?? 'created',
+        current_location: d.current_location ?? '',
+        description: d.description ?? '',
+        weight: d.weight ?? null,
+      };
+      return record ? sampleApi.update(record.id, payload) : sampleApi.create(payload);
+    },
     onSuccess: () => {
-      enqueueSnackbar(t('messages.updated'), { variant: 'success' });
+      enqueueSnackbar(record ? 'نمونه به‌روزرسانی شد' : 'نمونه ایجاد شد', { variant: 'success' });
       qc.invalidateQueries({ queryKey: ['samples'] });
       onClose();
     },
     onError: (err) => enqueueSnackbar(getErrorMessage(err), { variant: 'error' }),
   });
+
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit((d) => mutation.mutate(d))}>
         <Stack gap={2}>
-          <NumberInput<FormValues> name="project" label="شناسه پروژه" />
-          <DateTimeField<FormValues> name="date" label="تاریخ" />
+          <SelectInput<FormValues>
+            name="project"
+            label="پروژه (الزامی)"
+            options={projects.map((p) => ({ value: p.id, label: p.project_name }))}
+          />
+          <DateTimeField<FormValues> name="date" label="تاریخ نمونه" />
           <Stack direction="row" gap={2}>
             <TextInput<FormValues> name="category" label="رده" />
             <TextInput<FormValues> name="cement_grade" label="عیار سیمان" />
@@ -138,8 +185,10 @@ function SampleForm({ record, onClose }: { record: Sample | null; onClose: () =>
             <NumberInput<FormValues> name="weight" label="وزن (kg)" />
           </Stack>
           <SelectInput<FormValues> name="status" label="وضعیت" options={SAMPLE_STATUS_OPTIONS} />
-          <TextInput<FormValues> name="current_location" label="محل فعلی" />
-          <TextInput<FormValues> name="concrete_factory" label="کارخانه بتن" />
+          <Stack direction="row" gap={2}>
+            <TextInput<FormValues> name="current_location" label="محل فعلی" />
+            <TextInput<FormValues> name="concrete_factory" label="کارخانه بتن" />
+          </Stack>
           <TextInput<FormValues> name="weather_condition" label="وضعیت جوی" />
           <TextInput<FormValues> name="sampling_location" label="محل نمونه‌برداری" />
           <TextInput<FormValues> name="description" label="توضیحات" multiline rows={2} />

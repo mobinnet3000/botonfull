@@ -16,9 +16,15 @@ class SampleViewSet(ScopedModelViewSet):
 
     def get_queryset(self):
         qs = scope_by_project(
-            self.request.user, Sample.objects.select_related('project'), 'project',
+            self.request.user,
+            Sample.objects.select_related('project', 'sample_type', 'technician'),
+            'project',
         )
-        return qs.prefetch_related('series__molds', 'series__photos', 'test_executions')
+        return qs.prefetch_related(
+            'series__photos',
+            'pour_series__molds',
+            'pour_series__structural_member',
+        )
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:

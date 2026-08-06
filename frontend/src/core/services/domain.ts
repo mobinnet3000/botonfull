@@ -57,6 +57,19 @@ export const moldApi = {
   update: updateResource<Mold>('/molds/'),
   patch: patchResource<Mold>('/molds/'),
   remove: removeResource('/molds/'),
+  registerResult: (id: number, payload: Record<string, unknown>) =>
+    apiRequest<Mold>({ method: 'POST', url: `/molds/${id}/register_result/`, data: payload }),
+  registerResultForm: (id: number, formData: FormData) =>
+    apiRequest<Mold>({
+      method: 'POST',
+      url: `/molds/${id}/register_result/`,
+      data: formData,
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+  bulkUpdate: (payload: { ids: number[]; status?: string; priority?: string; technician?: number }) =>
+    apiRequest<{ updated: number }>({ method: 'POST', url: '/molds/bulk_update/', data: payload }),
+  assign: (payload: { ids: number[]; technician: number }) =>
+    apiRequest<{ updated: number }>({ method: 'POST', url: '/molds/assign/', data: payload }),
 };
 
 export const requestApi = {

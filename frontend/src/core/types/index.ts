@@ -97,8 +97,10 @@ export interface StructuralMember {
   description: string;
   created_at: string;
   updated_at: string;
+  project_name?: string;
   pour_count?: number;
   mold_count?: number;
+  pour_series?: PourSeries[];
 }
 
 export interface PourSeries {
@@ -181,6 +183,7 @@ export interface Project {
   client_company?: string | null;
   structural_members?: StructuralMember[];
   transactions?: Transaction[];
+  settings?: ProjectSettings;
   total_income?: number;
   total_expense?: number;
   balance?: number;
@@ -236,7 +239,9 @@ export interface Sample {
   responsible_engineer: number | null;
   received_by: number | null;
   age_in_days?: number | null;
+  project_name?: string | null;
   series?: SamplingSeries[];
+  pour_series?: PourSeries[];
   test_executions?: TestExecution[];
 }
 
@@ -281,6 +286,8 @@ export interface Mold {
   post_break_image: string | null;
   is_done: boolean;
   project_name?: string;
+  project_id?: number;
+  member_id?: number;
   member_name?: string;
   member_type?: string;
   pour_name?: string;
@@ -288,17 +295,83 @@ export interface Mold {
   technician_username?: string;
   status_display?: string;
   priority_display?: string;
+  remaining_days?: number;
+  is_overdue?: boolean;
 }
 
 export type TransactionType = 'income' | 'expense';
+
+export type TransactionCategory = 'labor' | 'material' | 'equipment' | 'transport' | 'testing' | 'consulting' | 'other';
+export type TransactionMethod = 'cash' | 'bank' | 'check';
 
 export interface Transaction {
   id: number;
   project: number;
   type: TransactionType;
   description: string;
-  amount: string;
+  amount: string | number;
   date: string;
+  category: TransactionCategory;
+  method: TransactionMethod;
+  is_settled: boolean;
+  notes: string;
+  type_display?: string;
+  category_display?: string;
+  method_display?: string;
+}
+
+export interface AccountingSummary {
+  total_income: number;
+  total_expense: number;
+  receivables: number;
+  received: number;
+  balance: number;
+  profit: number;
+  transaction_count: number;
+}
+
+export interface AccountingRunningRow {
+  id: number;
+  type: TransactionType;
+  amount: number;
+  date: string;
+  balance: number;
+}
+
+export interface AccountingData {
+  summary: AccountingSummary;
+  running_balance: AccountingRunningRow[];
+  categories: Record<string, { income: number; expense: number }>;
+  monthly: Record<string, { income: number; expense: number }>;
+}
+
+export interface CalendarDayEntry {
+  overdue: number;
+  today: number;
+  completed: number;
+  pending: number;
+  rejected: number;
+  urgent: number;
+  molds: number[];
+}
+
+export interface CalendarSchedule {
+  start: string;
+  end: string;
+  today: string;
+  days: Record<string, CalendarDayEntry>;
+  molds: Mold[];
+  stats: {
+    total: number;
+    overdue: number;
+    today: number;
+    pending: number;
+    completed: number;
+    rejected: number;
+    urgent: number;
+  };
+  pours: { id: number; name: string; pour_date: string; member: string; member_type: string; project: string; project_id: number }[];
+  deadlines: { id: number; project_name: string; end_date: string }[];
 }
 
 export interface Ticket {

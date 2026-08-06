@@ -1,5 +1,6 @@
 import django_filters
 from django.db import models
+from django.utils import timezone
 from api.models import Project, Sample, Mold, Transaction, Ticket, LabRequest, TestExecution, Report, StructuralMember, PourSeries
 
 
@@ -41,6 +42,15 @@ class SampleFilter(django_filters.FilterSet):
 
 
 class MoldFilter(django_filters.FilterSet):
+    project = django_filters.NumberFilter(field_name='pour_series__structural_member__project', lookup_expr='exact')
+    member = django_filters.NumberFilter(field_name='pour_series__structural_member', lookup_expr='exact')
+    pour = django_filters.NumberFilter(field_name='pour_series', lookup_expr='exact')
+    technician = django_filters.NumberFilter(field_name='technician', lookup_expr='exact')
+    status = django_filters.CharFilter(field_name='status', lookup_expr='exact')
+    priority = django_filters.CharFilter(field_name='priority', lookup_expr='exact')
+    is_done = django_filters.BooleanFilter(method='filter_is_done')
+    is_overdue = django_filters.BooleanFilter(method='filter_is_overdue')
+
     class Meta:
         model = Mold
         fields = {
@@ -49,12 +59,25 @@ class MoldFilter(django_filters.FilterSet):
             'deadline': ['gte', 'lte'],
         }
 
+    @staticmethod
+    def filter_is_done(queryset, name, value):
+        done = models.Q(status__in=['completed', 'rejected']) | models.Q(breaking_load__gt=0)
+        return queryset.filter(done) if value else queryset.exclude(done)
+
+    @staticmethod
+    def filter_is_overdue(queryset, name, value):
+        overdue = models.Q(deadline__lt=timezone.now()) & ~models.Q(status__in=['completed', 'rejected'])
+        return queryset.filter(overdue) if value else queryset.exclude(overdue)
+
 
 class TransactionFilter(django_filters.FilterSet):
     class Meta:
         model = Transaction
         fields = {
             'type': ['exact'],
+            'category': ['exact'],
+            'method': ['exact'],
+            'is_settled': ['exact'],
             'date': ['gte', 'lte'],
             'amount': ['gte', 'lte'],
         }

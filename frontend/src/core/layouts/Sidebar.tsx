@@ -55,6 +55,7 @@ interface NavItem {
 const NAV: NavItem[] = [
   { key: 'dashboard', label: 'nav.dashboard', icon: <DashboardIcon />, path: '/' },
   { key: 'projects', label: 'nav.projects', icon: <ProjectIcon />, path: '/projects' },
+  { key: 'calendar', label: 'nav.calendar', icon: <CalendarIcon />, path: '/calendar' },
   { key: 'samples', label: 'nav.samples', icon: <SampleIcon />, path: '/samples' },
   { key: 'molds', label: 'قالب‌ها', icon: <MoldIcon />, path: '/molds' },
   { key: 'requests', label: 'nav.requests', icon: <RequestIcon />, path: '/requests' },

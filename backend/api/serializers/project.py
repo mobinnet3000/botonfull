@@ -2,7 +2,8 @@ from rest_framework import serializers
 
 from api.models import Project
 from api.services.project_service import ProjectService
-from api.serializers.structuralmember import StructuralMemberReadSerializer
+from api.serializers.structuralmember import StructuralMemberReadSerializer, StructuralMemberDetailSerializer
+from api.serializers.projectsettings import ProjectSettingsSerializer
 from api.serializers.transaction import TransactionSerializer
 
 
@@ -35,21 +36,26 @@ class ProjectWriteSerializer(serializers.ModelSerializer):
 
 
 class ProjectReadSerializer(ProjectWriteSerializer):
-    structural_members = StructuralMemberReadSerializer(many=True, read_only=True)
-    transactions = TransactionSerializer(many=True, read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     priority_display = serializers.CharField(source='get_priority_display', read_only=True)
     factory_name = serializers.CharField(source='factory.name', read_only=True, default=None)
     client_company = serializers.CharField(source='client.name', read_only=True, default=None)
 
+    # مالی
     total_income = serializers.SerializerMethodField()
     total_expense = serializers.SerializerMethodField()
     balance = serializers.SerializerMethodField()
 
+    # شمارنده‌ها (annotate شده در view)
     member_count = serializers.SerializerMethodField()
     pour_count = serializers.SerializerMethodField()
     mold_count = serializers.SerializerMethodField()
     tested_mold_count = serializers.SerializerMethodField()
+
+    # ساختار درختی: فقط در دریافت جزئیات، اعضا به‌همراه ریزها و قالب‌ها برمی‌گردند
+    structural_members = serializers.SerializerMethodField()
+    transactions = TransactionSerializer(many=True, read_only=True)
+    settings = serializers.SerializerMethodField()
 
     class Meta(ProjectWriteSerializer.Meta):
         fields = ProjectWriteSerializer.Meta.fields + [
@@ -57,6 +63,7 @@ class ProjectReadSerializer(ProjectWriteSerializer):
             'structural_members', 'transactions',
             'total_income', 'total_expense', 'balance',
             'member_count', 'pour_count', 'mold_count', 'tested_mold_count',
+            'settings',
         ]
 
     @staticmethod
@@ -81,3 +88,14 @@ class ProjectReadSerializer(ProjectWriteSerializer):
 
     def get_tested_mold_count(self, obj: Project) -> int:
         return getattr(obj, 'tested_mold_count', 0)
+
+    def get_structural_members(self, obj):
+        members = obj.structural_members.all()
+        serializer_class = StructuralMemberDetailSerializer if self.context.get('with_tree') else StructuralMemberReadSerializer
+        return serializer_class(members, many=True, context=self.context).data
+
+    def get_settings(self, obj):
+        settings = getattr(obj, 'settings', None)
+        if settings is None:
+            return None
+        return ProjectSettingsSerializer(settings, context=self.context).data

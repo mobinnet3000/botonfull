@@ -24,11 +24,9 @@ import {
   Science as MemberIcon,
   LocalShipping as PourIcon,
   Description as ReportIcon,
-  Upload as ImportIcon,
   Download as ExportIcon,
   ChevronRight,
 } from '@mui/icons-material';
-import dayjs from 'dayjs';
 import { projectApi } from '../../core/services/projects';
 import { formatDate, formatNumber, downloadBlob, rowsToCsv } from '../../core/utils/format';
 import { useApp } from '../../core/contexts/AppContext';
@@ -38,12 +36,13 @@ import { AppBreadcrumbs } from '../../shared/components/AppBreadcrumbs';
 import { FormDrawer } from '../../shared/components/FormDrawer';
 import { FileUpload } from '../../shared/components/FileUpload';
 import { HierarchyTree, type HierarchyNode } from '../../shared/components/HierarchyTree';
-import { getProjectSettings, type ProjectSettings } from './projectSettings';
+import { projectSettings } from './projectSettings';
 import { ProjectSettingsForm } from './ProjectSettingsForm';
 import { StructuralMemberDialog } from './StructuralMemberDialog';
 import { PourSeriesDialog } from './PourSeriesDialog';
-import { MoldResultDrawer } from './MoldResultDrawer';
 import { ProjectReportDialog, type ReportScope } from './ProjectReportDialog';
+import { AccountingTab } from './AccountingTab';
+import { MoldDetailDrawer } from '../molds/MoldDetailDrawer';
 import {
   summarizeSeries,
   projectMolds,
@@ -52,9 +51,19 @@ import {
   moldMember,
   moldAgeLabel,
 } from './projectHelpers';
-import type { Project, Sample, Mold } from '../../core/types';
+import type { Project, StructuralMember, Mold, PourSeries } from '../../core/types';
 
-type Tab = 'tree' | 'members' | 'tests' | 'transactions' | 'files';
+type Tab = 'tree' | 'members' | 'tests' | 'accounting' | 'files';
+
+const MEMBER_TYPE_LABELS: Record<string, string> = {
+  foundation: 'فنداسیون',
+  column: 'ستون',
+  beam: 'تیر',
+  wall: 'دیوار',
+  slab: 'سقف',
+  stair: 'پله',
+  other: 'سایر',
+};
 
 export default function ProjectHierarchyPage() {
   const { id } = useParams();
@@ -67,21 +76,20 @@ export default function ProjectHierarchyPage() {
   const [memberOpen, setMemberOpen] = useState(false);
   const [pourFor, setPourFor] = useState<number | null>(null);
   const [reportScope, setReportScope] = useState<{ scope: ReportScope; label: string; memberId?: number } | null>(null);
-  const [moldResult, setMoldResult] = useState<Mold | null>(null);
-  const [settings, setSettings] = useState<ProjectSettings>(() => getProjectSettings(projectId));
+  const [moldId, setMoldId] = useState<number | null>(null);
 
   const { data: project, isLoading } = useQuery({
     queryKey: ['projects', projectId],
     queryFn: () => projectApi.get(projectId),
     enabled: Boolean(projectId),
     staleTime: 15_000,
-    placeholderData: undefined,
   });
 
-  const members = useMemo(() => projectMembers(project as Project), [project]);
-  const allMolds = useMemo(() => projectMolds(project as Project), [project]);
+  const settings = useMemo(() => projectSettings(project?.settings), [project]);
+  const members = useMemo(() => (project ? projectMembers(project) : []), [project]);
+  const allMolds = useMemo(() => (project ? projectMolds(project) : []), [project]);
   const pourCount = useMemo(
-    () => members.reduce((sum, m) => sum + (m.series ?? []).length, 0),
+    () => members.reduce((sum, m) => sum + (m.pour_series ?? []).length, 0),
     [members],
   );
 
@@ -94,13 +102,13 @@ export default function ProjectHierarchyPage() {
       chipLabel: 'پروژه',
       children: members.map((member) => ({
         id: `member-${member.id}`,
-        label: member.category,
+        label: member.name,
         chipColor: 'primary',
         chipLabel: 'عضو سازه‌ای',
         onClick: () => {
           setTab('members');
         },
-        children: (member.series ?? []).map((series) => {
+        children: (member.pour_series ?? []).map((series) => {
           const s = summarizeSeries(series);
           return {
             id: `pour-${series.id}`,
@@ -124,7 +132,7 @@ export default function ProjectHierarchyPage() {
     );
   }
 
-  const defaultPourName = `${settings.pourNamePrefix} #${pourCount + 1}`;
+  const defaultPourName = `${settings.pour_name_prefix || 'Truck'} #${pourCount + 1}`;
 
   const exportCsv = () => {
     const rows = allMolds.map((m) => ({
@@ -159,6 +167,7 @@ export default function ProjectHierarchyPage() {
           {project.project_name}
         </Typography>
         <Chip size="small" label={project.code} variant="outlined" />
+        <StatusChip value={project.status} />
         <Box sx={{ flexGrow: 1 }} />
         <ProjectActions
           settingsOpen={() => setSettingsOpen(true)}
@@ -170,10 +179,10 @@ export default function ProjectHierarchyPage() {
       </Stack>
 
       <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2 }} variant="scrollable">
-        <Tab value="tree" label="سازماندهی و ریزش" />
-        <Tab value="members" label={`عضوهای سازه‌ای (${members.length})`} />
+        <Tab value="tree" label="ساختار و ریزها" />
+        <Tab value="members" label={`اعضای سازه‌ای (${members.length})`} />
         <Tab value="tests" label={`قالب‌ها و آزمون‌ها (${allMolds.length})`} />
-        <Tab value="transactions" label="تراکنش‌ها" />
+        <Tab value="accounting" label="حسابداری پروژه" />
         <Tab value="files" label="فایل‌ها" />
       </Tabs>
 
@@ -181,7 +190,7 @@ export default function ProjectHierarchyPage() {
         <Card variant="outlined">
           <CardContent>
             <Typography variant="subtitle1" fontWeight={700} mb={2}>
-              ساختار درختی پروژه — عضو سازه‌ای / ریزش بتن
+              ساختار درختی پروژه — عضو سازه‌ای / ریز بتن
             </Typography>
             <HierarchyTree root={hierarchy} />
           </CardContent>
@@ -193,15 +202,15 @@ export default function ProjectHierarchyPage() {
           members={members}
           onAddMember={() => setMemberOpen(true)}
           onAddPour={(memberId) => setPourFor(memberId)}
-          onMemberReport={(memberId, name) => setReportScope({ scope: 'member', label: name, memberId })}
+          onMoldClick={(mid) => setMoldId(mid)}
         />
       )}
 
       {tab === 'tests' && (
-        <TestsTab project={project} molds={allMolds} onMoldClick={setMoldResult} />
+        <TestsTab project={project} molds={allMolds} onMoldClick={(mid) => setMoldId(mid)} />
       )}
 
-      {tab === 'transactions' && <TransactionsTab transactions={project.transactions ?? []} />}
+      {tab === 'accounting' && <AccountingTab projectId={project.id} />}
 
       {tab === 'files' && (
         <Card variant="outlined">
@@ -216,7 +225,6 @@ export default function ProjectHierarchyPage() {
           projectId={project.id}
           initial={settings}
           onClose={() => setSettingsOpen(false)}
-          onSaved={setSettings}
         />
       </FormDrawer>
 
@@ -226,27 +234,18 @@ export default function ProjectHierarchyPage() {
 
       <FormDrawer
         open={pourFor !== null}
-        title="ایجاد ریزش بتن و قالب‌ها"
+        title="ایجاد ریز بتن و قالب‌ها"
         onClose={() => setPourFor(null)}
       >
         {pourFor !== null && (
           <PourSeriesDialog
             projectId={project.id}
             memberId={pourFor}
+            members={members}
             settings={settings}
             defaultName={defaultPourName}
             onClose={() => setPourFor(null)}
           />
-        )}
-      </FormDrawer>
-
-      <FormDrawer
-        open={moldResult !== null}
-        title="ثبت نتیجه قالب"
-        onClose={() => setMoldResult(null)}
-      >
-        {moldResult && (
-          <MoldResultDrawer mold={moldResult} projectId={project.id} onClose={() => setMoldResult(null)} />
         )}
       </FormDrawer>
 
@@ -262,6 +261,8 @@ export default function ProjectHierarchyPage() {
           />
         )}
       </FormDrawer>
+
+      {moldId !== null && <MoldDetailDrawer moldId={moldId} onClose={() => setMoldId(null)} />}
     </Box>
   );
 }
@@ -304,7 +305,7 @@ function ProjectActions({
         عضو سازه‌ای
       </Button>
       <Button size="small" variant="contained" color="secondary" startIcon={<PourIcon />} onClick={addPour}>
-        ریزش
+        ریز بتن
       </Button>
       <Button size="small" variant="outlined" startIcon={<ReportIcon />} onClick={(e) => setMenu(e.currentTarget)}>
         گزارش
@@ -312,13 +313,10 @@ function ProjectActions({
       <Menu anchorEl={menu} open={Boolean(menu)} onClose={() => setMenu(null)}>
         <MenuItem onClick={() => { setMenu(null); report('project'); }}>گزارش کل پروژه</MenuItem>
         <MenuItem onClick={() => { setMenu(null); report('member'); }}>گزارش عضو سازه‌ای</MenuItem>
-        <MenuItem onClick={() => { setMenu(null); report('series'); }}>گزارش ریزش</MenuItem>
+        <MenuItem onClick={() => { setMenu(null); report('series'); }}>گزارش ریز</MenuItem>
         <MenuItem onClick={() => { setMenu(null); report('mold'); }}>گزارش قالب</MenuItem>
         <MenuItem onClick={() => { setMenu(null); report('test'); }}>گزارش آزمون</MenuItem>
       </Menu>
-      <Button size="small" variant="outlined" startIcon={<ImportIcon />}>
-        ورود
-      </Button>
       <Button size="small" variant="outlined" startIcon={<ExportIcon />} onClick={onExport}>
         خروجی
       </Button>
@@ -330,12 +328,12 @@ function MembersTab({
   members,
   onAddMember,
   onAddPour,
-  onMemberReport,
+  onMoldClick,
 }: {
-  members: Sample[];
+  members: StructuralMember[];
   onAddMember: () => void;
   onAddPour: (memberId: number) => void;
-  onMemberReport: (memberId: number, name: string) => void;
+  onMoldClick: (moldId: number) => void;
 }) {
   const [selectedId, setSelectedId] = useState<number | null>(members[0]?.id ?? null);
   const selected = members.find((m) => m.id === selectedId) ?? null;
@@ -347,7 +345,7 @@ function MembersTab({
           <CardContent>
             <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
               <Typography variant="subtitle1" fontWeight={700}>
-                عضوهای سازه‌ای
+                اعضای سازه‌ای
               </Typography>
               <Button size="small" startIcon={<AddIcon />} onClick={onAddMember}>
                 جدید
@@ -359,28 +357,31 @@ function MembersTab({
                   عضوی ثبت نشده است
                 </Typography>
               )}
-              {members.map((m) => (
-                <Box
-                  key={m.id}
-                  onClick={() => setSelectedId(m.id)}
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1,
-                    p: 1,
-                    borderRadius: 1,
-                    cursor: 'pointer',
-                    bgcolor: selectedId === m.id ? 'action.selected' : 'transparent',
-                    '&:hover': { bgcolor: 'action.hover' },
-                  }}
-                >
-                  <ChevronRight fontSize="small" color="primary" />
-                  <Typography variant="body2" sx={{ flexGrow: 1 }} fontWeight={selectedId === m.id ? 700 : 500}>
-                    {m.category}
-                  </Typography>
-                  <Chip size="small" label={`${memberMolds(m).length} قالب`} variant="outlined" />
-                </Box>
-              ))}
+              {members.map((m) => {
+                const molds = memberMolds(m);
+                return (
+                  <Box
+                    key={m.id}
+                    onClick={() => setSelectedId(m.id)}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      p: 1,
+                      borderRadius: 1,
+                      cursor: 'pointer',
+                      bgcolor: selectedId === m.id ? 'action.selected' : 'transparent',
+                      '&:hover': { bgcolor: 'action.hover' },
+                    }}
+                  >
+                    <ChevronRight fontSize="small" color="primary" />
+                    <Typography variant="body2" sx={{ flexGrow: 1 }} fontWeight={selectedId === m.id ? 700 : 500}>
+                      {m.name}
+                    </Typography>
+                    <Chip size="small" label={`${molds.length} قالب`} variant="outlined" />
+                  </Box>
+                );
+              })}
             </Stack>
           </CardContent>
         </Card>
@@ -398,7 +399,7 @@ function MembersTab({
           <MemberDetail
             member={selected}
             onAddPour={() => onAddPour(selected.id)}
-            onReport={() => onMemberReport(selected.id, selected.category)}
+            onMoldClick={onMoldClick}
           />
         )}
       </Grid>
@@ -406,10 +407,18 @@ function MembersTab({
   );
 }
 
-function MemberDetail({ member, onAddPour, onReport }: { member: Sample; onAddPour: () => void; onReport: () => void }) {
+function MemberDetail({
+  member,
+  onAddPour,
+  onMoldClick,
+}: {
+  member: StructuralMember;
+  onAddPour: () => void;
+  onMoldClick: (moldId: number) => void;
+}) {
   const molds = memberMolds(member);
   const tested = molds.filter((m) => m.is_done).length;
-  const pours = member.series ?? [];
+  const pours = member.pour_series ?? [];
 
   return (
     <Stack gap={2}>
@@ -417,67 +426,90 @@ function MemberDetail({ member, onAddPour, onReport }: { member: Sample; onAddPo
         <CardContent>
           <Stack direction="row" alignItems="center" gap={1} flexWrap="wrap">
             <Typography variant="subtitle1" fontWeight={700} sx={{ flexGrow: 1 }}>
-              {member.category}
+              {member.name}
             </Typography>
-            <StatusChip value={member.status} />
-            <Chip size="small" label={`${pours.length} ریزش`} variant="outlined" />
+            <Chip size="small" label={MEMBER_TYPE_LABELS[member.member_type] ?? member.member_type} variant="outlined" />
+            <Chip size="small" label={`${pours.length} ریز`} variant="outlined" />
             <Chip size="small" label={`${molds.length} قالب`} variant="outlined" />
-            <Chip size="small" label={`${tested} انجام شده`} color={tested === molds.length && molds.length ? 'success' : 'default'} variant="outlined" />
+            <Chip
+              size="small"
+              label={`${tested} انجام شده`}
+              color={tested === molds.length && molds.length ? 'success' : 'default'}
+              variant="outlined"
+            />
           </Stack>
-          <Stack direction="row" gap={1} mt={1.5} flexWrap="wrap">
-            <Button size="small" variant="contained" startIcon={<PourIcon />} onClick={onAddPour}>
-              ریزش جدید
-            </Button>
-            <Button size="small" variant="outlined" startIcon={<ReportIcon />} onClick={onReport}>
-              گزارش عضو
-            </Button>
-          </Stack>
+          {member.description && (
+            <Typography variant="body2" color="text.secondary" mt={1}>
+              {member.description}
+            </Typography>
+          )}
+          <Button size="small" variant="contained" startIcon={<PourIcon />} onClick={onAddPour} sx={{ mt: 1.5 }}>
+            ریز جدید
+          </Button>
         </CardContent>
       </Card>
 
       <Card variant="outlined">
         <CardContent>
           <Typography variant="subtitle1" fontWeight={700} mb={1}>
-            ریزش‌ها و قالب‌ها
+            ریزهای بتن و قالب‌ها
           </Typography>
-          {pours.length === 0 && <Typography color="text.secondary" variant="body2">ریزشی ثبت نشده است</Typography>}
-          {pours.map((series) => {
-            const s = summarizeSeries(series);
-            return (
-              <Box key={series.id} sx={{ py: 1, borderBottom: '1px solid', borderColor: 'divider' }}>
-                <Stack direction="row" alignItems="center" gap={1} flexWrap="wrap">
-                  <Typography variant="body2" fontWeight={600} sx={{ minWidth: 140 }}>
-                    {series.name || `ریزش ${series.id}`}
-                  </Typography>
-                  <Chip size="small" label={`${s.total} قالب`} />
-                  <Chip size="small" label={`${s.tested} انجام`} color={s.tested ? 'success' : 'default'} />
-                  <Chip size="small" label={s.dueToday ? `${s.dueToday} امروز` : `${s.overdue} دیرکرد`} color={s.overdue ? 'error' : s.dueToday ? 'warning' : 'default'} />
-                  <Typography variant="caption" color="text.secondary">
-                    بعدی: {s.nextDueLabel}
-                  </Typography>
-                </Stack>
-                <Stack direction="row" gap={0.5} mt={0.5} flexWrap="wrap">
-                  {(series.molds ?? []).map((m) => (
-                    <Chip
-                      key={m.id}
-                      size="small"
-                      variant="outlined"
-                      label={`${moldAgeLabel(m.age_in_days)}${m.is_done ? ' ✓' : ''}`}
-                      color={m.is_done ? 'success' : 'warning'}
-                      title={`${m.sample_identifier} — ${formatDate(m.deadline)}`}
-                    />
-                  ))}
-                </Stack>
-              </Box>
-            );
-          })}
+          {pours.length === 0 && <Typography color="text.secondary" variant="body2">ریزی ثبت نشده است</Typography>}
+          {pours.map((series) => (
+            <PourBlock key={series.id} series={series} onMoldClick={onMoldClick} />
+          ))}
         </CardContent>
       </Card>
     </Stack>
   );
 }
 
-function TestsTab({ project, molds, onMoldClick }: { project: Project; molds: Mold[]; onMoldClick: (m: Mold) => void }) {
+function PourBlock({ series, onMoldClick }: { series: PourSeries; onMoldClick: (moldId: number) => void }) {
+  const s = summarizeSeries(series);
+  return (
+    <Box sx={{ py: 1.25, borderBottom: '1px solid', borderColor: 'divider' }}>
+      <Stack direction="row" alignItems="center" gap={1} flexWrap="wrap" mb={1}>
+        <Typography variant="body2" fontWeight={600} sx={{ minWidth: 140 }}>
+          {series.name || `ریزش ${series.id}`}
+        </Typography>
+        <Typography variant="caption" color="text.secondary">
+          {formatDate(series.pour_date)}
+        </Typography>
+        <Chip size="small" label={`${s.total} قالب`} />
+        <Chip size="small" label={`${s.tested} انجام`} color={s.tested ? 'success' : 'default'} />
+        {s.overdue > 0 && <Chip size="small" label={`${s.overdue} دیرکرد`} color="error" />}
+        {s.dueToday > 0 && <Chip size="small" label={`${s.dueToday} امروز`} color="warning" />}
+        <Typography variant="caption" color="text.secondary">
+          آزمون بعدی: {s.nextDueLabel}
+        </Typography>
+      </Stack>
+      <Stack direction="row" gap={0.5} flexWrap="wrap">
+        {(series.molds ?? []).map((m) => (
+          <Chip
+            key={m.id}
+            size="small"
+            variant="outlined"
+            label={`${moldAgeLabel(m.age_in_days)}${m.is_done ? ' ✓' : ''}`}
+            color={m.is_done ? 'success' : m.is_overdue ? 'error' : 'warning'}
+            title={`${m.sample_identifier} — ${formatDate(m.deadline)}`}
+            onClick={() => onMoldClick(m.id)}
+            sx={{ cursor: 'pointer' }}
+          />
+        ))}
+      </Stack>
+    </Box>
+  );
+}
+
+function TestsTab({
+  project,
+  molds,
+  onMoldClick,
+}: {
+  project: Project;
+  molds: Mold[];
+  onMoldClick: (moldId: number) => void;
+}) {
   const [sortBy, setSortBy] = useState<'deadline' | 'age' | 'status' | 'member' | 'done'>('deadline');
 
   const sorted = useMemo(() => {
@@ -485,7 +517,7 @@ function TestsTab({ project, molds, onMoldClick }: { project: Project; molds: Mo
     const memberOf = (m: Mold) => moldMember(project, m.id).member;
     switch (sortBy) {
       case 'deadline':
-        arr.sort((a, b) => dayjs(a.deadline).valueOf() - dayjs(b.deadline).valueOf());
+        arr.sort((a, b) => Number(new Date(a.deadline)) - Number(new Date(b.deadline)));
         break;
       case 'age':
         arr.sort((a, b) => a.age_in_days - b.age_in_days);
@@ -494,7 +526,7 @@ function TestsTab({ project, molds, onMoldClick }: { project: Project; molds: Mo
         arr.sort((a, b) => Number(a.is_done) - Number(b.is_done));
         break;
       case 'member':
-        arr.sort((a, b) => ((memberOf(a)?.category ?? '') > (memberOf(b)?.category ?? '') ? 1 : -1));
+        arr.sort((a, b) => ((memberOf(a)?.name ?? '') > (memberOf(b)?.name ?? '') ? 1 : -1));
         break;
       case 'done':
         arr.sort((a, b) => Number(b.breaking_load ?? 0) - Number(a.breaking_load ?? 0));
@@ -532,7 +564,7 @@ function TestsTab({ project, molds, onMoldClick }: { project: Project; molds: Mo
             return (
               <Box
                 key={m.id}
-                onClick={() => onMoldClick(m)}
+                onClick={() => onMoldClick(m.id)}
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
@@ -547,41 +579,21 @@ function TestsTab({ project, molds, onMoldClick }: { project: Project; molds: Mo
                 }}
               >
                 <Chip size="small" label={m.sample_identifier} color="primary" variant="outlined" />
-                <Typography variant="body2" color="text.secondary" sx={{ minWidth: 110 }}>
-                  {ctx.member?.category ?? '—'} / {ctx.series?.name ?? '—'}
+                <Typography variant="body2" color="text.secondary" sx={{ minWidth: 140 }}>
+                  {ctx.member?.name ?? '—'} / {ctx.series?.name ?? '—'}
                 </Typography>
                 <Chip size="small" label={moldAgeLabel(m.age_in_days)} />
                 <Typography variant="body2">
                   موعد: {formatDate(m.deadline)}
                 </Typography>
-                <StatusChip value={m.is_done ? 'completed' : 'waiting'} label={m.is_done ? 'انجام شده' : 'در انتظار'} />
+                <StatusChip value={m.status} label={m.status_display ?? m.status} />
                 {m.breaking_load !== null && m.breaking_load !== undefined && (
-                  <Chip size="small" label={`بار شکست: ${m.breaking_load}`} color="success" />
+                  <Chip size="small" label={`بار شکست: ${formatNumber(m.breaking_load)}`} color="success" />
                 )}
               </Box>
             );
           })}
         </Stack>
-      </CardContent>
-    </Card>
-  );
-}
-
-function TransactionsTab({ transactions }: { transactions: any[] }) {
-  return (
-    <Card variant="outlined">
-      <CardContent>
-        {transactions.length === 0 ? (
-          <Typography color="text.secondary" textAlign="center" py={3}>تراکنشی ثبت نشده است</Typography>
-        ) : (
-          transactions.map((tx) => (
-            <Box key={tx.id} sx={{ py: 1, borderBottom: '1px solid', borderColor: 'divider' }}>
-              <Typography variant="body2">
-                {tx.type === 'income' ? 'درآمد' : 'هزینه'} — {tx.description} — {formatNumber(tx.amount)} — {formatDate(tx.date)}
-              </Typography>
-            </Box>
-          ))
-        )}
       </CardContent>
     </Card>
   );
