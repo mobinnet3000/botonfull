@@ -1,539 +1,685 @@
-# ENTERPRISE FRONTEND FINALIZATION PROMPT
+You are the Lead Software Architect, Senior Django Backend Engineer, Senior React Engineer, Senior UX Designer, Database Architect, and Product Owner of this project.
 
-Use **UI/UX ProMax Skill**.
+Your task is NOT to analyze.
+Your task is NOT to explain.
+Your task is NOT to create a plan.
 
-You are the Lead Frontend Engineer, Senior React Architect, Senior TypeScript Engineer, Senior UI/UX Designer, QA Lead, Release Engineer and Production Readiness Reviewer.
+Your task is to IMPLEMENT everything described below directly in the existing codebase.
 
-The Django backend is already completed.
+Do not stop after analysis.
+Do not ask for confirmation.
+Do not return a proposal.
+Start modifying the project immediately.
 
-The architecture is already defined.
+==========================================================
+IMPORTANT LIMITS
+==========================================================
 
-Your job is NOT to redesign or rethink anything.
+Modify ONLY these four modules:
 
-Your job is ONLY to inspect, complete, fix, optimize, verify and release the frontend.
+1. Projects
+2. Calendar
+3. Molds
+4. Samples
 
---------------------------------------------------
-MISSION
---------------------------------------------------
+DO NOT modify ANYTHING ELSE.
 
-Work ONLY inside the existing **frontend/** folder.
+Do not touch:
 
-Read the backend OpenAPI/Swagger and use the existing API contracts exactly.
+- Dashboard
+- Reports
+- Authentication
+- Users
+- Roles
+- Settings
+- Equipment
+- Notifications
+- Tickets
+- Files
+- Profile
+- Any unrelated module
 
-Do NOT modify backend code.
+Keep every existing feature working.
 
-Do NOT modify backend APIs.
+==========================================================
+GENERAL GOAL
+==========================================================
 
-Do NOT change business logic.
+Completely redesign these four modules into a production-grade Laboratory Information Management workflow.
 
-Do NOT create another architecture.
+The system must feel like software built specifically for a concrete laboratory.
 
-Do NOT create another frontend.
+The workflow must be simple.
 
-Only improve and complete the existing implementation.
+The UI must be extremely clean.
 
---------------------------------------------------
-TECH STACK
---------------------------------------------------
+Everything must be consistent.
 
-React 19
+Everything must be fast.
 
-Vite
+Everything must use one unified data structure.
 
-TypeScript (Strict)
+==========================================================
+FIRST STEP
+==========================================================
 
-React Router
+Analyze the entire backend and frontend.
 
-TanStack Query
+Find every model, serializer, API, relation, service, React component, query and business rule related to these four modules.
 
-Axios
+Then IMPLEMENT all required backend and frontend changes.
 
-React Hook Form
+Do NOT stop after analysis.
 
-Zod
+==========================================================
+BACKEND IMPLEMENTATION
+==========================================================
 
-Material UI
+Implement every backend change required.
 
-MUI X DataGrid
+If models are incomplete, COMPLETE them.
 
-MUI Date Pickers
+If migrations exist without models, implement the missing models.
 
-Day.js
+If serializers are missing, create them.
 
-Framer Motion
+If viewsets are missing, create them.
 
-Recharts
+If services are missing, implement them.
 
-React PDF
+If filters are missing, implement them.
 
-React Dropzone
+If permissions are required, implement them.
 
-QR Code
+If indexes are needed, create them.
 
-Barcode
+If select_related/prefetch_related are missing, optimize them.
 
-Notistack
+If API endpoints are missing, implement them.
 
-React Helmet
+Keep backward compatibility whenever possible.
 
-React Error Boundary
+Everything must be production-ready.
 
-ESLint
+==========================================================
+FRONTEND IMPLEMENTATION
+==========================================================
 
-Prettier
+Implement every frontend change required.
 
-Husky
+Modify existing pages.
 
---------------------------------------------------
-IMPLEMENTATION RULES
---------------------------------------------------
+Create reusable components.
 
-Never ask questions.
+Remove duplicated logic.
 
-Never explain reasoning.
+Optimize rendering.
 
-Never leave TODO.
+Keep code clean.
 
-Never leave FIXME.
+No dead code.
 
-Never leave placeholders.
+No duplicated code.
 
-Never generate fake data.
+No broken types.
 
-Never ignore TypeScript errors.
+==========================================================
+UNIFIED STRUCTURE
+==========================================================
 
-Never use "any" unless absolutely necessary.
+The entire application must use ONE hierarchy.
 
-Never use @ts-ignore unless unavoidable.
+Project
 
-Keep the current architecture.
+↓
 
-Refactor duplicated code.
+Structural Members
 
-Remove dead code.
+↓
 
-Remove unused files.
+Concrete Pour Series
 
-Optimize existing code instead of replacing architecture.
+↓
 
---------------------------------------------------
-UI / UX
---------------------------------------------------
+Molds
 
-Use Enterprise Premium UI.
+↓
 
-Maintain one consistent Design System.
+Laboratory Test
 
-Professional spacing
+Every page must use this exact hierarchy.
 
-Typography
+Never create different structures.
 
-Colors
+==========================================================
+PROJECT MODULE
+==========================================================
 
-Dark Mode
+Completely redesign ONLY the Project module.
 
-Light Mode
+----------------------------------------------------------
+Project Settings
+----------------------------------------------------------
 
-RTL
+Each project must have its own settings.
 
-LTR
+Include:
 
-Responsive Design
+Default mold ages
 
-Professional Tables
+Default mold count
 
-Drawer Forms
+Default naming
 
-Dialogs
+Automatic numbering
 
-Animations
+Project defaults
 
-Loading States
+Those settings are automatically used whenever a new pour is created.
 
-Skeletons
+Users can override only the current pour.
 
-Empty States
+----------------------------------------------------------
+Structural Members
+----------------------------------------------------------
 
-Error States
+Projects contain unlimited structural members.
 
-Success States
+Examples:
 
-Sticky Header
+Foundation
 
-Collapsible Sidebar
+Column
 
-Breadcrumbs
+Wall
 
-Command Palette
+Beam
 
-Global Search
+Roof
 
-Quick Actions
+Slab
 
-Keyboard Shortcuts
+Stairs
 
-Accessibility
+etc.
 
-The entire application must feel like one integrated enterprise software.
+----------------------------------------------------------
+Concrete Pour
+----------------------------------------------------------
 
---------------------------------------------------
-VERIFY & COMPLETE
---------------------------------------------------
+A Concrete Pour MUST always belong to ONE Structural Member.
 
-Inspect every file.
+Fix the current workflow.
 
-Repair every broken component.
+Right now users can create a pour without selecting the structural member.
 
-Complete every unfinished page.
+This is NOT acceptable.
 
-Complete every CRUD page.
+Creating a pour MUST require selecting its Structural Member.
 
-Complete every dialog.
+Make this mandatory.
 
-Complete every drawer.
+----------------------------------------------------------
+Automatic Mold Creation
+----------------------------------------------------------
 
-Complete every form.
+When creating a Pour:
 
-Complete every table.
+Automatically create molds using project defaults.
 
-Complete every chart.
+Allow changing mold count only for that pour.
 
-Complete every report page.
+==========================================================
+PROJECT TREE
+==========================================================
 
-Complete every upload component.
+Keep the tree minimal.
 
-Complete every PDF component.
+Project
 
-Complete every QR component.
+↓
 
-Complete every Barcode component.
+Structural Member
 
---------------------------------------------------
-VERIFY FEATURES
---------------------------------------------------
+↓
 
-Authentication
+Pour
 
-Authorization
+DO NOT show molds as child nodes.
 
-Role Based Access
+Instead, every Pour row must display a compact summary.
 
-Dashboard
+Example:
 
-Projects
+4 molds
 
-Clients
+2 completed
 
-Factories
+1 overdue
 
-Samples
+1 today
 
-Sample Details
+Next test in 3 days
 
-Timeline
+Display everything in one clean horizontal row.
 
-Tracking
+==========================================================
+STRUCTURAL MEMBER DETAILS
+==========================================================
 
-Requests
+Clicking a Structural Member opens its detail page.
 
-Tests
+Inside:
 
-Test Execution
+All Pour Series
 
-Equipment
+Inside each Pour:
 
-Maintenance
+All Molds
 
-Curing Tanks
+Clicking any Mold opens one reusable Mold Detail page.
 
-Reports
+==========================================================
+MOLD DETAIL
+==========================================================
 
-PDF Viewer
+The same Mold Detail component must be used everywhere.
 
-Analytics
+Opening a mold from:
 
-Notifications
-
-Files
+Project
 
 Calendar
 
-Users
+Samples
 
-Settings
+Molds
 
-Profile
+must always open the same interface.
 
-Activity Logs
+Inside:
 
-Global Search
+General information
 
---------------------------------------------------
-TABLES
---------------------------------------------------
-
-Sorting
-
-Filtering
-
-Searching
-
-Pagination
-
-Column Visibility
-
-Selection
-
-Bulk Actions
-
-CSV Export
-
-Excel Export
-
-Print
-
---------------------------------------------------
-FORMS
---------------------------------------------------
-
-Validation
-
-Loading
-
-Error Handling
-
-Success Handling
-
-Reset
-
-Attachments
-
-File Upload
-
-Date Pickers
-
-Optimistic Updates
-
---------------------------------------------------
-CALENDAR
---------------------------------------------------
-
-Monthly
-
-Weekly
-
-Daily
-
-Agenda
+History
 
 Timeline
 
-Persian Calendar
+Attachments
 
-English Calendar
+Images
 
-Project Deadlines
+Notes
 
-Sample Due Dates
+Test information
 
-Equipment Calibration
+Laboratory Result Form
 
-Upcoming Tests
+Allow technicians to register test results directly.
 
---------------------------------------------------
+==========================================================
+PROJECT ACCOUNTING
+==========================================================
+
+Replace the current Transactions tab with a lightweight project accounting module.
+
+Not a full accounting software.
+
+Only project accounting.
+
+Include:
+
+Income
+
+Expenses
+
+Receivables
+
+Payments
+
+Remaining Balance
+
+Profit
+
+Loss
+
+Running Balance
+
+Transaction History
+
+Categories
+
+Notes
+
+Search
+
+Filters
+
+Summary Cards
+
+Automatic Totals
+
+Useful Charts
+
+Everything belongs ONLY to that project.
+
+==========================================================
+CALENDAR
+==========================================================
+
+Move Calendar immediately after Dashboard and Projects in the sidebar.
+
+Completely redesign Calendar.
+
+Calendar becomes the technician's daily workspace.
+
+Everything must use Jalali calendar.
+
+Everything must display Persian dates.
+
+==========================================================
+CALENDAR DAILY VIEW
+==========================================================
+
+Every day must clearly show:
+
+Overdue molds
+
+Today's molds
+
+Completed molds
+
+Pending molds
+
+Rejected tests
+
+Urgent tests
+
+Use meaningful colors.
+
+==========================================================
+DAY DETAILS
+==========================================================
+
+Clicking any day opens a side panel.
+
+Inside:
+
+All molds scheduled for that day.
+
+Each row shows:
+
+Project
+
+Structural Member
+
+Pour
+
+Age
+
+Due Date
+
+Technician
+
+Priority
+
+Status
+
+Remaining Time
+
+Everything useful.
+
+==========================================================
+TEST REGISTRATION
+==========================================================
+
+Clicking any mold opens the reusable Mold Detail page.
+
+Technicians can register:
+
+Breaking Load
+
+Weight
+
+Failure Type
+
+Photos
+
+Notes
+
+Completion
+
+Without leaving Calendar.
+
+==========================================================
+CALENDAR IMPROVEMENTS
+==========================================================
+
+Improve the Calendar as much as possible.
+
+Add any useful laboratory scheduling information including:
+
+Upcoming tests
+
+Laboratory workload
+
+Project deadlines
+
+Future pours
+
+Equipment events if related
+
+Daily workload
+
+Weekly workload
+
+Monthly overview
+
+Useful statistics
+
+Meaningful legends
+
+Smart filtering
+
+Everything that improves technician productivity.
+
+==========================================================
+MOLDS MODULE
+==========================================================
+
+Redesign the Mold module.
+
+Current UX is confusing.
+
+Transform it into a work queue.
+
+Support:
+
+Advanced filtering
+
+Search
+
+Grouping
+
+Sorting
+
+Status
+
+Priority
+
+Technician
+
+Project
+
+Member
+
+Pour
+
+Age
+
+Due date
+
+Quick actions
+
+Bulk actions
+
+Every row immediately shows:
+
+Project
+
+Structural Member
+
+Pour
+
+Age
+
+Status
+
+Due Date
+
+Remaining Time
+
+Assigned Technician
+
+Result
+
+==========================================================
+SAMPLES MODULE
+==========================================================
+
+Completely redesign Samples.
+
+Current UX is confusing.
+
+Simplify navigation.
+
+Simplify relationships.
+
+Improve readability.
+
+Improve forms.
+
+Improve filtering.
+
+Improve searching.
+
+Improve details page.
+
+Relationship between
+
+Project
+
+Member
+
+Pour
+
+Mold
+
+must always remain obvious.
+
+==========================================================
 PERFORMANCE
---------------------------------------------------
+==========================================================
 
-Lazy Loading
+Optimize ONLY these four modules.
 
-Code Splitting
+Implement:
+
+React Query optimization
 
 Memoization
 
 Virtualization
 
-React Query Optimization
+Lazy rendering
 
-Bundle Optimization
+Caching
 
-Avoid unnecessary renders
+Optimized queries
 
---------------------------------------------------
-SECURITY
---------------------------------------------------
+Background refetch
 
-Protected Routes
+Pagination
 
-Role Based Rendering
+Large dataset optimization
 
-Axios Interceptors
+Tree optimization
 
-Token Handling
+Calendar optimization
 
-Unauthorized Handling
+==========================================================
+DATABASE
+==========================================================
 
-Safe Rendering
+Optimize database.
 
-Upload Validation
+Add indexes where useful.
 
---------------------------------------------------
-SELF VALIDATION LOOP
---------------------------------------------------
+Use transaction.atomic.
 
-Repeat the following process until ALL checks pass:
+Eliminate N+1 queries.
 
-1. Scan the entire project.
-2. Detect every issue.
-3. Fix every issue.
-4. Run TypeScript validation.
-5. Run ESLint.
-6. Run production build.
-7. Verify routing.
-8. Verify pages.
-9. Verify API integration.
-10. Verify responsive layouts.
-11. Verify UI consistency.
-12. Verify runtime.
-13. If ANY issue remains, repeat the entire process.
+Use select_related.
 
-Stop ONLY when every verification succeeds.
+Use prefetch_related.
 
---------------------------------------------------
-RELEASE CHECKLIST
---------------------------------------------------
+Optimize serializers.
 
-The project must successfully pass:
+Optimize querysets.
 
-✓ npm install
+==========================================================
+QUALITY
+==========================================================
 
-✓ npm run lint
+No duplicated code.
 
-✓ TypeScript compilation
+No dead code.
 
-✓ npm run build
+No unused imports.
 
-✓ Development server
+No TypeScript errors.
 
-✓ Production build
+No ESLint errors.
 
-✓ No Syntax Errors
+No runtime errors.
 
-✓ No Runtime Errors
+==========================================================
+VALIDATION
+==========================================================
 
-✓ No TypeScript Errors
+When implementation is finished:
 
-✓ No ESLint Errors
+Run migrations if needed.
 
-✓ No Broken Routes
+Run TypeScript validation.
 
-✓ No Broken Components
+Run ESLint.
 
-✓ No Broken Imports
+Run production build.
 
-✓ No Broken API Calls
+Run backend tests.
 
-✓ No Broken Forms
+Verify every CRUD.
 
-✓ No Broken Tables
+Verify APIs.
 
-✓ No Broken Layouts
+Verify performance.
 
-✓ No Broken Permissions
+Verify that ONLY these four modules were modified.
 
---------------------------------------------------
-FINAL REPORT (IN PERSIAN)
---------------------------------------------------
+Finally generate a detailed Persian report including:
 
-Generate a COMPLETE Persian report including:
+- Backend changes
+- Frontend changes
+- New files
+- Modified files
+- Deleted files
+- API changes
+- Database changes
+- Performance improvements
+- UX improvements
+- Validation results
+- Build results
+- Test results
 
-1. Project overview
-
-2. Folder structure
-
-3. Architecture summary
-
-4. Design System
-
-5. Theme
-
-6. Routing
-
-7. State Management
-
-8. API Layer
-
-9. Backend integration
-
-10. Pages completed
-
-11. Components completed
-
-12. Shared components
-
-13. CRUD modules
-
-14. Dashboard
-
-15. Calendar
-
-16. Reports
-
-17. File Manager
-
-18. Notifications
-
-19. Charts
-
-20. Authentication
-
-21. Role Based Access
-
-22. UI/UX improvements
-
-23. Responsive improvements
-
-24. Performance improvements
-
-25. Security improvements
-
-26. TypeScript fixes
-
-27. React fixes
-
-28. Runtime fixes
-
-29. Build fixes
-
-30. Files created
-
-31. Files modified
-
-32. Files removed
-
-33. Refactoring performed
-
-34. Bugs found
-
-35. Bugs fixed
-
-36. Remaining issues (if any)
-
-37. Test results
-
-38. Build result
-
-39. Production readiness
-
---------------------------------------------------
-FINAL STATUS
---------------------------------------------------
-
-Only if ALL checks have actually passed, print:
-
-✅ FINAL RELEASE READY
-
-Otherwise print:
-
-❌ RELEASE NOT READY
-
-Never claim success unless the frontend has actually been verified to compile, build, run and work with the backend APIs.
+Do not stop until the implementation is complete.
