@@ -1,14 +1,13 @@
-def generate_sample_names(floor_count: int) -> list[str]:
-    names = ['فنداسیون']
-    for i in range(1, floor_count + 1):
-        names.append(f'ستون{i}')
-        names.append(f'سقف{i}')
-    return names
+def normalize_name(name: str) -> str:
+    return name.replace(' ', '-').lower()
 
+def generate_sample_names(floor_count: int) -> list[str]:
+    return [f'Floor-{i+1}' for i in range(floor_count)]
 
 def generate_series_name(category: str, index: int) -> str:
-    return f'{category}-{index + 1}'
+    return f'{category}-{index+1}'
 
-
-def generate_mold_identifier(category: str, age: int, series_name: str) -> str:
-    return f'{category}-{age}روزه-{series_name}'
+def generate_mold_identifier(member_name: str, age: int, pour_name: str) -> str:
+    member = normalize_name(member_name)[:20]
+    pour = normalize_name(pour_name)[:20]
+    return f'{member}-{pour}-{age}R'

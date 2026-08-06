@@ -6,6 +6,9 @@ from api.models.project import Project
 from api.models.sample import Sample
 from api.models.sample_type import SampleType
 from api.models.sampling_series import SamplingSeries, SamplingSeriesPhoto
+from api.models.structuralmember import StructuralMember
+from api.models.pourseries import PourSeries
+from api.models.projectsettings import ProjectSettings
 from api.models.mold import Mold
 from api.models.transaction import Transaction
 from api.models.ticket import Ticket, TicketMessage
@@ -29,6 +32,9 @@ __all__ = [
     'SampleType',
     'SamplingSeries',
     'SamplingSeriesPhoto',
+    'StructuralMember',
+    'PourSeries',
+    'ProjectSettings',
     'Mold',
     'Transaction',
     'Ticket',

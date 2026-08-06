@@ -1,3 +1,4 @@
+from django.db import models
 from rest_framework import permissions
 
 from api.models import Project
@@ -15,15 +16,29 @@ class ProjectViewSet(ScopedModelViewSet):
     ordering_fields = ['created_at', 'project_name', 'status', 'priority', 'contract_price']
 
     def get_queryset(self):
-        return (
+        qs = (
             scope_projects(self.request.user)
             .with_financials()
             .select_related('owner', 'client', 'factory')
             .prefetch_related(
-                'samples__series__molds', 'samples__series__photos',
+                'structural_members__pour_series__molds',
                 'transactions', 'lab_requests',
             )
         )
+        
+        if self.action == 'list':
+            qs = qs.annotate(
+                member_count=models.Count('structural_members', distinct=True),
+                pour_count=models.Count('structural_members__pour_series', distinct=True),
+                mold_count=models.Count('structural_members__pour_series__molds', distinct=True),
+                tested_mold_count=models.Count(
+                    'structural_members__pour_series__molds',
+                    filter=models.Q(structural_members__pour_series__molds__status__in=['completed', 'rejected']),
+                    distinct=True,
+                ),
+            )
+        
+        return qs
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:

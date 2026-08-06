@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import type { Project, Sample, SamplingSeries, Mold } from '../../core/types';
+import type { Project, SamplingSeries, Mold, StructuralMember } from '../../core/types';
 
 export interface PourSummary {
   total: number;
@@ -19,7 +19,7 @@ export function summarizeSeries(series: SamplingSeries): PourSummary {
   let nextDue: string | null = null;
   let nextDueDay: dayjs.Dayjs | null = null;
   for (const m of molds) {
-    if (m.is_done || (m.breaking_load !== null && m.breaking_load !== undefined)) {
+    if (m.is_done) {
       tested += 1;
       continue;
     }
@@ -43,35 +43,32 @@ export function summarizeSeries(series: SamplingSeries): PourSummary {
   };
 }
 
-export function memberMolds(member: Sample | null | undefined): Mold[] {
-  if (!member) return [];
+export function memberMolds(member: StructuralMember): Mold[] {
   const out: Mold[] = [];
-  for (const series of member.series ?? []) {
+  for (const series of member.pour_series ?? []) {
     out.push(...(series.molds ?? []));
   }
   return out;
 }
 
-export function projectMolds(project: Project | null | undefined): Mold[] {
-  if (!project) return [];
+export function projectMolds(project: Project): Mold[] {
   const out: Mold[] = [];
-  for (const member of project.samples ?? []) {
+  for (const member of project.structural_members ?? []) {
     out.push(...memberMolds(member));
   }
   return out;
 }
 
-export function projectMembers(project: Project | null | undefined): Sample[] {
-  return project?.samples ?? [];
+export function projectMembers(project: Project): StructuralMember[] {
+  return project?.structural_members ?? [];
 }
 
 export function moldMember(
-  project: Project | null | undefined,
+  project: Project,
   moldId: number,
-): { member?: Sample; series?: SamplingSeries; mold?: Mold } {
-  if (!project) return {};
-  for (const member of project.samples ?? []) {
-    for (const series of member.series ?? []) {
+): { member?: StructuralMember; series?: any; mold?: Mold } {
+  for (const member of project.structural_members ?? []) {
+    for (const series of member.pour_series ?? []) {
       const mold = (series.molds ?? []).find((m) => m.id === moldId);
       if (mold) return { member, series, mold };
     }

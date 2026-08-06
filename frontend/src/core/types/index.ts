@@ -89,6 +89,56 @@ export interface FullUserData {
 export type ProjectStatus = 'active' | 'on_hold' | 'completed' | 'cancelled';
 export type Priority = 'low' | 'medium' | 'high' | 'urgent';
 
+export interface StructuralMember {
+  id: number;
+  project: number;
+  name: string;
+  member_type: 'foundation' | 'column' | 'beam' | 'wall' | 'slab' | 'stair' | 'other';
+  description: string;
+  created_at: string;
+  updated_at: string;
+  pour_count?: number;
+  mold_count?: number;
+}
+
+export interface PourSeries {
+  id: number;
+  structural_member: number;
+  sample: number | null;
+  name: string;
+  pour_date: string;
+  concrete_temperature: number;
+  concrete_temperature_image: string | null;
+  slump: number;
+  slump_image: string | null;
+  axis: string;
+  has_additive: boolean;
+  truck_number: string;
+  batch_number: string;
+  notes: string;
+  created_at: string;
+  updated_at: string;
+  project_name?: string;
+  member_name?: string;
+  member_type?: string;
+  molds?: Mold[];
+}
+
+export interface ProjectSettings {
+  id: number;
+  project: number;
+  default_mold_ages: number[];
+  default_mold_count: number;
+  pour_name_prefix: string;
+  member_name_prefix: string;
+  use_auto_numbering: boolean;
+  next_pour_number: number;
+  next_member_number: number;
+  custom_age_labels: Record<string, string>;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Project {
   id: number;
   owner: number;
@@ -129,11 +179,15 @@ export interface Project {
   priority_display?: string;
   factory_name?: string | null;
   client_company?: string | null;
-  samples?: Sample[];
+  structural_members?: StructuralMember[];
   transactions?: Transaction[];
   total_income?: number;
   total_expense?: number;
   balance?: number;
+  member_count?: number;
+  pour_count?: number;
+  mold_count?: number;
+  tested_mold_count?: number;
 }
 
 export type SampleStatus =
@@ -209,18 +263,31 @@ export interface SamplingSeriesPhoto {
 
 export interface Mold {
   id: number;
-  series: number;
+  pour_series: number;
   age_in_days: number;
+  sample_identifier: string;
   mass: number | null;
   breaking_load: number | null;
+  failure_type: string;
+  test_notes: string;
+  extra_data: Record<string, unknown>;
+  status: 'pending' | 'in_progress' | 'completed' | 'rejected' | 'overdue';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  technician: number | null;
   created_at: string;
   completed_at: string | null;
   deadline: string;
-  sample_identifier: string;
-  extra_data: Record<string, unknown>;
   pre_break_image: string | null;
   post_break_image: string | null;
   is_done: boolean;
+  project_name?: string;
+  member_name?: string;
+  member_type?: string;
+  pour_name?: string;
+  pour_date?: string;
+  technician_username?: string;
+  status_display?: string;
+  priority_display?: string;
 }
 
 export type TransactionType = 'income' | 'expense';

@@ -13,6 +13,8 @@ from api.serializers.sampling_series import (
     SamplingSeriesPhotoSerializer,
 )
 from api.serializers.mold import MoldSerializer
+from api.serializers.structuralmember import StructuralMemberReadSerializer, StructuralMemberWriteSerializer
+from api.serializers.pourseries import PourSeriesReadSerializer, PourSeriesWriteSerializer
 from api.serializers.transaction import TransactionSerializer
 from api.serializers.ticket import TicketSerializer, TicketMessageSerializer
 from api.serializers.lab_request import LabRequestSerializer
@@ -42,6 +44,10 @@ __all__ = [
     'SamplingSeriesReadSerializer',
     'SamplingSeriesPhotoSerializer',
     'MoldSerializer',
+    'StructuralMemberReadSerializer',
+    'StructuralMemberWriteSerializer',
+    'PourSeriesReadSerializer',
+    'PourSeriesWriteSerializer',
     'TransactionSerializer',
     'TicketSerializer',
     'TicketMessageSerializer',

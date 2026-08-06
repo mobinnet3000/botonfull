@@ -1,7 +1,5 @@
-from rest_framework import permissions
-from rest_framework.response import Response
-
-from api.models import Sample, ActivityLog
+from rest_framework import viewsets, permissions, parsers
+from api.models import Sample
 from api.serializers import SampleReadSerializer, SampleWriteSerializer, ActivityLogSerializer
 from api.access import scope_by_project
 from api.roles import ADMIN, LAB_MANAGER, TECHNICIAN, RECEPTION
@@ -28,6 +26,7 @@ class SampleViewSet(ScopedModelViewSet):
         return SampleWriteSerializer
 
     def update(self, request, *args, **kwargs):
+        from rest_framework.response import Response
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
@@ -45,7 +44,8 @@ class SampleViewSet(ScopedModelViewSet):
         instance.delete()
 
     def history(self, request, *args, **kwargs):
-        """تاریخچه کامل نمونه."""
+        from rest_framework.response import Response
+        from api.models import ActivityLog
         instance = self.get_object()
         logs = ActivityLog.objects.filter(
             content_type='api.sample', object_id=instance.id,

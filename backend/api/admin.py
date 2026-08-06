@@ -133,10 +133,6 @@ class SampleTypeAdmin(admin.ModelAdmin):
 
 
 # --- Sampling Series ---
-class MoldInline(admin.TabularInline):
-    model = Mold
-    extra = 0
-    fields = ('age_in_days', 'mass', 'breaking_load', 'deadline')
 
 
 class SamplingSeriesPhotoInline(admin.TabularInline):
@@ -149,13 +145,14 @@ class SamplingSeriesPhotoInline(admin.TabularInline):
 class SamplingSeriesAdmin(admin.ModelAdmin):
     list_display = ('sample', 'name', 'concrete_temperature', 'slump', 'axis')
     search_fields = ('name', 'sample__code', 'sample__category')
-    inlines = [MoldInline, SamplingSeriesPhotoInline]
+    inlines = [SamplingSeriesPhotoInline]
 
 
 # --- Mold ---
 @admin.register(Mold)
 class MoldAdmin(admin.ModelAdmin):
-    list_display = ('sample_identifier', 'series', 'age_in_days', 'breaking_load', 'deadline', 'is_done')
+    list_display = ('sample_identifier', 'pour_series', 'age_in_days', 'breaking_load', 'deadline', 'is_done', 'status')
+    list_filter = ('status', 'priority')
     search_fields = ('sample_identifier',)
 
 

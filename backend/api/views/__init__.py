@@ -6,6 +6,8 @@ from api.views.project import ProjectViewSet
 from api.views.sample import SampleViewSet
 from api.views.sampling_series import SamplingSeriesViewSet, SamplingSeriesPhotoViewSet
 from api.views.mold import MoldViewSet
+from api.views.structuralmember import StructuralMemberViewSet
+from api.views.pourseries import PourSeriesViewSet
 from api.views.transaction import TransactionViewSet
 from api.views.ticket import TicketViewSet, TicketMessageViewSet
 from api.views.catalog import SampleTypeViewSet, TestTypeViewSet, AcceptanceCriteriaViewSet
@@ -30,6 +32,8 @@ __all__ = [
     'SamplingSeriesViewSet',
     'SamplingSeriesPhotoViewSet',
     'MoldViewSet',
+    'StructuralMemberViewSet',
+    'PourSeriesViewSet',
     'TransactionViewSet',
     'TicketViewSet',
     'TicketMessageViewSet',

@@ -10,7 +10,27 @@ import type {
   SamplingSeries,
   Mold,
   SamplingSeriesPhoto,
+  StructuralMember,
+  PourSeries,
 } from '../types';
+
+export const structuralMemberApi = {
+  list: listResource<StructuralMember>('/structural-members/'),
+  get: getResource<StructuralMember>('/structural-members/'),
+  create: createResource<StructuralMember, Partial<StructuralMember>>('/structural-members/'),
+  update: updateResource<StructuralMember>('/structural-members/'),
+  patch: patchResource<StructuralMember>('/structural-members/'),
+  remove: removeResource('/structural-members/'),
+};
+
+export const pourSeriesApi = {
+  list: listResource<PourSeries>('/pour-series/'),
+  get: getResource<PourSeries>('/pour-series/'),
+  create: createResource<PourSeries, Partial<PourSeries>>('/pour-series/'),
+  update: updateResource<PourSeries>('/pour-series/'),
+  patch: patchResource<PourSeries>('/pour-series/'),
+  remove: removeResource('/pour-series/'),
+};
 
 export const seriesApi = {
   list: listResource<SamplingSeries>('/series/'),

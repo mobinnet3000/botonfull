@@ -8,6 +8,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, Sp
 from api.views import (
     TransactionViewSet, LabProfileViewSet, ProjectViewSet, SampleViewSet,
     SamplingSeriesViewSet, SamplingSeriesPhotoViewSet, MoldViewSet,
+    StructuralMemberViewSet, PourSeriesViewSet,
     TicketViewSet, TicketMessageViewSet,
     UserRegistrationView, FullUserDataView,
     FactoryViewSet, ClientViewSet,
@@ -31,6 +32,8 @@ router.register(r'test-types', TestTypeViewSet, basename='test-types')
 router.register(r'series', SamplingSeriesViewSet, basename='series')
 router.register(r'series-photos', SamplingSeriesPhotoViewSet, basename='series-photos')
 router.register(r'molds', MoldViewSet, basename='molds')
+router.register(r'structural-members', StructuralMemberViewSet, basename='structural-members')
+router.register(r'pour-series', PourSeriesViewSet, basename='pour-series')
 router.register(r'transactions', TransactionViewSet, basename='transactions')
 router.register(r'tickets', TicketViewSet, basename='tickets')
 router.register(r'ticket-messages', TicketMessageViewSet, basename='ticket-messages')

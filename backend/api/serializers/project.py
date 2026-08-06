@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from api.models import Project
 from api.services.project_service import ProjectService
-from api.serializers.sample import SampleReadSerializer
+from api.serializers.structuralmember import StructuralMemberReadSerializer
 from api.serializers.transaction import TransactionSerializer
 
 
@@ -35,7 +35,7 @@ class ProjectWriteSerializer(serializers.ModelSerializer):
 
 
 class ProjectReadSerializer(ProjectWriteSerializer):
-    samples = SampleReadSerializer(many=True, read_only=True)
+    structural_members = StructuralMemberReadSerializer(many=True, read_only=True)
     transactions = TransactionSerializer(many=True, read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     priority_display = serializers.CharField(source='get_priority_display', read_only=True)
@@ -46,11 +46,17 @@ class ProjectReadSerializer(ProjectWriteSerializer):
     total_expense = serializers.SerializerMethodField()
     balance = serializers.SerializerMethodField()
 
+    member_count = serializers.SerializerMethodField()
+    pour_count = serializers.SerializerMethodField()
+    mold_count = serializers.SerializerMethodField()
+    tested_mold_count = serializers.SerializerMethodField()
+
     class Meta(ProjectWriteSerializer.Meta):
         fields = ProjectWriteSerializer.Meta.fields + [
             'status_display', 'priority_display', 'factory_name', 'client_company',
-            'samples', 'transactions',
+            'structural_members', 'transactions',
             'total_income', 'total_expense', 'balance',
+            'member_count', 'pour_count', 'mold_count', 'tested_mold_count',
         ]
 
     @staticmethod
@@ -63,3 +69,15 @@ class ProjectReadSerializer(ProjectWriteSerializer):
 
     def get_balance(self, obj: Project) -> float:
         return self.get_total_income(obj) - self.get_total_expense(obj)
+
+    def get_member_count(self, obj: Project) -> int:
+        return getattr(obj, 'member_count', 0)
+
+    def get_pour_count(self, obj: Project) -> int:
+        return getattr(obj, 'pour_count', 0)
+
+    def get_mold_count(self, obj: Project) -> int:
+        return getattr(obj, 'mold_count', 0)
+
+    def get_tested_mold_count(self, obj: Project) -> int:
+        return getattr(obj, 'tested_mold_count', 0)
